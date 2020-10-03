@@ -1,5 +1,5 @@
 /**
- * Copyright 2012-2020 Yisin Lin
+ * Copyright 2020 Yisin Lin
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -25,9 +25,22 @@ import java.lang.annotation.Target;
 @Inherited
 @Documented
 
+/**
+ * Annotation for declaring on interfaces to automatically generate feign clients
+ */
 public @interface FeignClient {
 
+    /**
+     * @return an URL prefix for concatenating with relative path. It can be either
+     * an absolute URL (e.g. https://postman-echo.com) or a placeholders (e.g. ${postman-echo.domain})
+     */
     String url();
+
+    /**
+     * Encoder class for the specified Feign client interface, to encode parameters
+     * in certain way. The encoder class must implement the class feign.codec.Encoder.
+     * @return encoder class for the specified Feign client interface
+     */
     Class<?> encoder() default void.class;
 
 }

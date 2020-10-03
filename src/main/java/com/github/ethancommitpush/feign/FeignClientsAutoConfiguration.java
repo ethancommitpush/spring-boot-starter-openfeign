@@ -1,5 +1,5 @@
 /**
- * Copyright 2012-2020 Yisin Lin
+ * Copyright 2020 Yisin Lin
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -18,6 +18,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+/**
+ * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
+ * Auto-configuration} that sets up feign clients.
+ */
 @Configuration
 @ConditionalOnClass({ FeignClient.class })
 @Import(FeignClientsRegistrar.class)

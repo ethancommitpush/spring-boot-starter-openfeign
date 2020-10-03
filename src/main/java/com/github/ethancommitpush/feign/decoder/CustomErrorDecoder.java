@@ -1,5 +1,5 @@
 /**
- * Copyright 2012-2020 Yisin Lin
+ * Copyright 2020 Yisin Lin
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -17,10 +17,19 @@ import feign.Response;
 import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * A custom errorDecoder to log exceptions.
+ */
 @Slf4j
 public class CustomErrorDecoder implements ErrorDecoder {
     private final ErrorDecoder errorDecoder = new Default();
 
+    /**
+     * Decode an HTTP {@link Response}.
+     * @param methodKey configKey of the java method that invoked the request.
+     * @param response HTTP response.
+     * @return Exception.
+     */
     @Override
     public Exception decode(String methodKey, Response response) {
         if (response.status() >= 400 && response.status() <= 599) {
