@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Import;
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
  * Auto-configuration} that sets up feign clients.
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ FeignClient.class })
 @Import(FeignClientsRegistrar.class)
 public class FeignClientsAutoConfiguration {
