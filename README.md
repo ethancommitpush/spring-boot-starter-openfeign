@@ -4,6 +4,7 @@ Spring Boot Starter OpenFeign
 =======================
 
 This library makes it easier to automatically use Feign.builder() to construct API interfaces with your custom components declared with a `@FeignClient` annotation. 
+There is no any configures about Ribbon or Eureka for this library, just simply visits the APIs with the domain URL and path.
 
 # Artifacts
 
