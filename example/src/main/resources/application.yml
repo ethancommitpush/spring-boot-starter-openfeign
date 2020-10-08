@@ -1,0 +1,6 @@
+feign:
+  log-level: BASIC
+  base-packages: example.client
+
+postman-echo:
+  domain: https://postman-echo.com
