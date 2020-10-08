@@ -40,6 +40,20 @@ public interface PostmanEchoClient {
 }
 ```
 
+* `application.yml` Properties configuration:
+
+```yaml
+feign:
+  # Set up log level for feign behaviors
+  log-level: BASIC
+  # Packages to be scanned for interfaces declared with @FeignClient
+  base-packages: example.client
+
+postman-echo:
+  # The base url for your API interface, e. g. @FeignClient(url = "${postman-echo.domain}")
+  domain: https://postman-echo.com
+```
+
 * Use `@Autowired` to autowire the API interfaces and further use it:
 
 ```java
