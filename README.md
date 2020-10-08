@@ -65,3 +65,8 @@ postman-echo:
         log.info("{}", respDTO1);
     }
 ```
+
+### Examples
+Look up the [example](https://github.com/ethancommitpush/spring-boot-starter-openfeign/tree/master/example).
+
+---
