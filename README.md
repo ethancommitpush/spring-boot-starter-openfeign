@@ -31,6 +31,8 @@ compile group: 'com.github.ethancommitpush', name: 'spring-boot-starter-openfeig
 * Use `@FeignClient` to declare custom components to be generated as API interfaces:
 
 ```java
+package example.client;
+
 @Headers({"Content-Type: application/json"})
 @FeignClient(url = "${postman-echo.domain}")
 public interface PostmanEchoClient {
