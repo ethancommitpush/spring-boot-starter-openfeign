@@ -20,6 +20,7 @@ import feign.Logger;
 import feign.codec.Encoder;
 import feign.httpclient.ApacheHttpClient;
 import feign.jackson.JacksonDecoder;
+import feign.jackson.JacksonEncoder;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -132,9 +133,7 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
                 .decoder(new JacksonDecoder())
                 .logger(new Logger.ErrorLogger())
                 .logLevel(Logger.Level.valueOf(logLevel));
-        if (encoder != null) {
-            builder.encoder(encoder);
-        }
+        builder.encoder(encoder != null ? encoder : new JacksonEncoder());
 
         return builder.target(apiType, url);
     }

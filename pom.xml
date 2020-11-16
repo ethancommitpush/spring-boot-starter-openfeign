@@ -20,7 +20,7 @@
 
   <groupId>com.github.ethancommitpush</groupId>
   <artifactId>spring-boot-starter-openfeign</artifactId>
-  <version>1.1.0</version>
+  <version>1.1.2</version>
   <packaging>jar</packaging>
 
   <name>spring-boot-starter-openfeign</name>
