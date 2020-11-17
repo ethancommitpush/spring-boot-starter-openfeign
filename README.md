@@ -22,14 +22,14 @@ Add the Maven dependency:
 <dependency>
   <groupId>com.github.ethancommitpush</groupId>
   <artifactId>spring-boot-starter-openfeign</artifactId>
-  <version>1.0.2</version>
+  <version>1.1.2</version>
 </dependency>
 ```
 
 ## Gradle 
 
 ```groovy
-compile group: 'com.github.ethancommitpush', name: 'spring-boot-starter-openfeign', version: '1.0.2'
+compile group: 'com.github.ethancommitpush', name: 'spring-boot-starter-openfeign', version: '1.1.2'
 ```
 
 # Usage
