@@ -8,6 +8,12 @@ There is no any configures about Ribbon or Eureka for this library, just simply 
 
 # Artifacts
 
+
+
+## What's new?
+### Update 11/17/2020: Version 1.1.2 Release Includes
+* Replace default encoder with JacksonEncoder
+
 ## Maven configuration
 
 Add the Maven dependency:
@@ -16,14 +22,14 @@ Add the Maven dependency:
 <dependency>
   <groupId>com.github.ethancommitpush</groupId>
   <artifactId>spring-boot-starter-openfeign</artifactId>
-  <version>${version}</version>
+  <version>1.0.2</version>
 </dependency>
 ```
 
 ## Gradle 
 
 ```groovy
-compile group: 'com.github.ethancommitpush', name: 'spring-boot-starter-openfeign', version: '${version}'
+compile group: 'com.github.ethancommitpush', name: 'spring-boot-starter-openfeign', version: '1.0.2'
 ```
 
 # Usage
