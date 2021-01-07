@@ -35,8 +35,8 @@ public class CustomErrorDecoder implements ErrorDecoder {
     public Exception decode(String methodKey, Response response) {
         if (response.status() >= 400 && response.status() <= 599) {
             log.error("status {} reading {}, url: {}, request body: {}"
-                            , response.status(), methodKey, response.request().url()
-                            , requestBodyAsString(response.request()));
+                    , response.status(), methodKey, response.request().url()
+                    , requestBodyAsString(response.request()));
         }
         return errorDecoder.decode(methodKey, response);
     }

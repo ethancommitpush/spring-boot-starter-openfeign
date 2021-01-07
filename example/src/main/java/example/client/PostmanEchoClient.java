@@ -5,7 +5,6 @@ import example.dto.HeadersGetRespDTO;
 import example.dto.TimeObjectGetRespDTO;
 import example.dto.TransformCollectionPostReqDTO;
 import example.dto.TransformCollectionPostRespDTO;
-import feign.Body;
 import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
@@ -22,7 +21,6 @@ public interface PostmanEchoClient {
     HeadersGetRespDTO getHeaders(@Param("mySampleHeader") String mySampleHeader);
 
     @RequestLine("POST /transform/collection?from={from}&to={to}")
-    @Body("{body}")
-    TransformCollectionPostRespDTO postTransformCollection(@Param("from") int from, @Param("to") int to, @Param("body") TransformCollectionPostReqDTO body);
+    TransformCollectionPostRespDTO postTransformCollection(@Param("from") int from, @Param("to") int to, TransformCollectionPostReqDTO body);
 
 }

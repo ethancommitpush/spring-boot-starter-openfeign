@@ -1,11 +1,9 @@
 package example.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-public class TransformCollectionPostReqDTO extends AbstractReqDTO {
+@Data
+public class TransformCollectionPostReqDTO {
     private String name;
     private String description;
 

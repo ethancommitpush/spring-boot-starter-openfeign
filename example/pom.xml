@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.ethancommitpush</groupId>
 	<artifactId>spring-boot-starter-openfeign-example</artifactId>
-	<version>2.2.7-SNAPSHOT</version>
+	<version>1.1.3</version>
 	<packaging>jar</packaging>
 
 	<name>spring-boot-starter-openfeign-example</name>
@@ -14,7 +14,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-		<feign.version>10.7.2</feign.version>
+		<feign.version>10.7.3</feign.version>
 	</properties>
 
 	<parent>
@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>com.github.ethancommitpush</groupId>
 			<artifactId>spring-boot-starter-openfeign</artifactId>
-			<version>1.1.2</version>
+			<version>1.1.3</version>
 		</dependency>
 
 		<dependency>
