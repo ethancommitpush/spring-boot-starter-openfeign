@@ -13,6 +13,7 @@
  */
 package com.github.ethancommitpush.feign.decoder;
 
+import feign.Request;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +36,26 @@ public class CustomErrorDecoder implements ErrorDecoder {
         if (response.status() >= 400 && response.status() <= 599) {
             log.error("status {} reading {}, url: {}, request body: {}"
                             , response.status(), methodKey, response.request().url()
-                            , response.request().requestBody().asString());
+                            , requestBodyAsString(response.request()));
         }
         return errorDecoder.decode(methodKey, response);
+    }
+
+    /**
+     * Retrieve request body as string.
+     *
+     * Derived from feign.Request.Body.asString()
+     *
+     * Since (inclusively) feign 10.7.3, Request.requestBody().asString() is not available, so
+     * we need to workaround it.
+     *
+     * @param request
+     * @return
+     */
+    public static String requestBodyAsString(Request request) {
+        return !request.isBinary()
+                ? new String(request.body(), request.charset())
+                : "Binary data";
     }
 
 }
