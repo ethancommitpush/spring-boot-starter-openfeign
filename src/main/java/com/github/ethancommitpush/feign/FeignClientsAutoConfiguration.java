@@ -13,8 +13,6 @@
  */
 package com.github.ethancommitpush.feign;
 
-import java.beans.BeanProperty;
-
 import com.github.ethancommitpush.feign.annotation.FeignClient;
 import com.github.ethancommitpush.feign.decoder.CustomErrorDecoder;
 

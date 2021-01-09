@@ -14,9 +14,9 @@
 package com.github.ethancommitpush.feign;
 
 import com.github.ethancommitpush.feign.annotation.FeignClient;
-import feign.Logger;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
+
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -44,7 +44,6 @@ import java.util.*;
 public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware, EnvironmentAware {
 
     private static final String BASE_PACKAGES_KEY = "feign.base-packages";
-    private static final String LOG_LEVEL_KEY = "feign.log-level";
 
     private Environment environment;
     private ResourceLoader resourceLoader;
@@ -71,8 +70,6 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
         scanner.addIncludeFilter(annotationTypeFilter);
         List<String> basePackages = Optional.ofNullable(environment.getProperty(BASE_PACKAGES_KEY))
                 .map(s -> Arrays.asList(s.split("\\,"))).orElse(Collections.emptyList());
-        String logLevel = Optional.ofNullable(environment.getProperty(LOG_LEVEL_KEY))
-                .orElse(Logger.Level.BASIC.name());
 
         basePackages.stream()
                 .map(p -> scanner.findCandidateComponents(p))
@@ -83,7 +80,7 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
                 .filter(meta -> meta.isInterface())
                 .forEach(meta -> {
                     Map<String, Object> attributes = meta.getAnnotationAttributes(FeignClient.class.getCanonicalName());
-                    registerFeignClient(registry, meta.getClassName(), attributes, logLevel);
+                    registerFeignClient(registry, meta.getClassName(), attributes);
                 });
     }
 
@@ -93,7 +90,7 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
      * @param attributes attributes of the &#64;FeignClient annotation.
      * @param logLevel log level configured at property file or as default value: BASIC.
      */
-    private void registerFeignClient(BeanDefinitionRegistry registry, String className, Map<String, Object> attributes, String logLevel) {
+    private void registerFeignClient(BeanDefinitionRegistry registry, String className, Map<String, Object> attributes) {
         String shortClassName = ClassUtils.getShortName(className);
         String beanName =  Introspector.decapitalize(shortClassName);
         //Encoder encoder = getEncoder(attributes);
@@ -111,7 +108,6 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
 
 		definition.addPropertyValue("apiType", apiType);
         definition.addPropertyValue("url", url);
-		definition.addPropertyValue("logLevel", logLevel);
 		definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
 
 		AbstractBeanDefinition beanDefinition = definition.getBeanDefinition();

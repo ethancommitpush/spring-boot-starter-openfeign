@@ -17,6 +17,8 @@ import org.apache.http.ssl.SSLContexts;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+
 import javax.net.ssl.SSLContext;
 
 import java.security.cert.X509Certificate;
@@ -26,6 +28,7 @@ import java.security.cert.X509Certificate;
  */
 @Getter
 @Setter
+@EnableConfigurationProperties(FeignClientsProperties.class)
 public class FeignClientsFactory implements FactoryBean<Object>, InitializingBean {
     
     private Class<?> apiType;
@@ -41,19 +44,23 @@ public class FeignClientsFactory implements FactoryBean<Object>, InitializingBea
     @Autowired
     private ErrorDecoder errorDecoder;
     
-    private String logLevel;
+    private final FeignClientsProperties properties;
+
+    public FeignClientsFactory(FeignClientsProperties properties) {
+        this.properties = properties;
+    }
 
     @Override
     public  void afterPropertiesSet() throws Exception {
         System.out.println("---------------------------------- apiType=" + apiType + ", url=" + url 
                 + ", errorDecoder=" + errorDecoder
                 + ", decoder=" + decoder
-                + ", encoder=" + encoder + ", logLevel=" + logLevel);
+                + ", encoder=" + encoder + ", logLevel=" + getProperties().getLogLevel());
     }
 
     @Override
     public Object getObject() throws Exception {
-        return feignBuild(apiType, url, encoder, logLevel);
+        return feignBuild(apiType, url, encoder, getProperties().getLogLevel());
     }
 
     /**
