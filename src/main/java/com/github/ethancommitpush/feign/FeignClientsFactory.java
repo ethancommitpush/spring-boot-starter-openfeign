@@ -37,14 +37,14 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, Initializing
     private String url;
     
     @Autowired 
-    private Encoder encoder;
+    private Encoder defaultEncoder;
 
     @Autowired
-    private Decoder decoder;
+    private Decoder defaultDecoder;
 
     @Autowired
     private ErrorDecoder errorDecoder;
-    
+
     private Map<String, Object> attributes;
     
     private final FeignClientsProperties properties;
@@ -58,11 +58,13 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, Initializing
         System.out.println("---------------------------------- apiType=" + apiType + ", url=" + url 
                 + ", errorDecoder=" + errorDecoder
                 + ", attributes="  + attributes
+                + ", defaultEcoder=" + defaultDecoder
+                + ", defaultEncoder=" + defaultEncoder + ", logLevel=" + getProperties().getLogLevel());
     }
 
     @Override
     public Object getObject() throws Exception {
-        return feignBuild(apiType, url, encoder, getProperties().getLogLevel());
+        return feignBuild();
     }
 
     /**
@@ -96,21 +98,62 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, Initializing
      */
     private T feignBuild() {
         Feign.Builder builder = Feign.builder().client(new ApacheHttpClient(getHttpClient()))
-                .encoder(getEncoder())
-                .decoder(getDecoder())
+                .encoder(resolveEncoder())
+                .decoder(resolveDecoder())
                 .logger(new Logger.ErrorLogger())
-                .logLevel(Logger.Level.valueOf(logLevel));
+                .logLevel(Logger.Level.valueOf(getProperties().getLogLevel()));
 
         if (getErrorDecoder() != null) {
             builder.errorDecoder(getErrorDecoder());
         }
 
-        return builder.target(apiType, url);
+        return builder.target(getApiType(), getUrl());
     }
 
     @Override
     public Class<?> getObjectType() {
         return this.apiType;
+    }
+
+    /**
+     * Get the encoder value from the attributes of the &#64;FeignClient annotation.
+     * 
+     * @return encoder.
+     */
+    public Encoder resolveEncoder() {
+        Class<?> encoderClass = (Class<?>)getAttributes().get("encoder");
+        if (encoderClass == null || encoderClass == void.class) {
+            return getDefaultEncoder();
+        }
+        
+        Encoder encoder = null;
+        try {
+            encoder = (Encoder) encoderClass.newInstance();
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+        return encoder;
+    }
+
+    /**
+     * Get the decoder value from the attributes of the &#64;FeignClient annotation.
+     * 
+     * @return decoder.
+     */
+    public Decoder resolveDecoder() {
+        Class<?> decoderClass = (Class<?>)getAttributes().get("decoder");
+
+        if (decoderClass == null || decoderClass == void.class) {
+            return getDefaultDecoder();
+        }
+
+        Decoder decoder = null;
+        try {
+            decoder = (Decoder) decoderClass.newInstance();
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+        return decoder;
     }
 
 }

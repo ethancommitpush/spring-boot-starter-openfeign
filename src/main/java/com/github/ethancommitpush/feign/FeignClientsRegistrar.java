@@ -93,8 +93,7 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
     private void registerFeignClient(BeanDefinitionRegistry registry, String className, Map<String, Object> attributes) {
         String shortClassName = ClassUtils.getShortName(className);
         String beanName =  Introspector.decapitalize(shortClassName);
-        //Encoder encoder = getEncoder(attributes);
-        //Decoder decoder = getDecoder(attributes);
+        
         Class<?> apiType = null;
         try {
             apiType = Class.forName(className);
@@ -116,42 +115,6 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
 
 		BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, beanName);
 		BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
-    }
-
-    /**
-     * Get the encoder value from the attributes of the &#64;FeignClient annotation.
-     * 
-     * @return encoder.
-     */
-    private Encoder getEncoder(Map<String, Object> attributes) {
-        if (attributes.get("encoder") == null) {
-            return null;
-        }
-
-        Encoder encoder = null;
-        try {
-            encoder = (Encoder) ((Class<?>) attributes.get("encoder")).newInstance();
-        } catch (Exception e) {
-        }
-        return encoder;
-    }
-
-    /**
-     * Get the decoder value from the attributes of the &#64;FeignClient annotation.
-     * 
-     * @return decoder.
-     */
-    private Decoder getDecoder(Map<String, Object> attributes) {
-        if (attributes.get("decoder") == null) {
-            return null;
-        }
-
-        Decoder decoder = null;
-        try {
-            decoder = (Decoder) ((Class<?>) attributes.get("decoder")).newInstance();
-        } catch (Exception e) {
-        }
-        return decoder;
     }
 
     /**
