@@ -14,23 +14,15 @@
 package com.github.ethancommitpush.feign;
 
 import com.github.ethancommitpush.feign.annotation.FeignClient;
-import com.github.ethancommitpush.feign.decoder.CustomErrorDecoder;
-import feign.Feign;
 import feign.Logger;
+import feign.codec.Decoder;
 import feign.codec.Encoder;
-import feign.httpclient.ApacheHttpClient;
-import feign.jackson.JacksonDecoder;
-import feign.jackson.JacksonEncoder;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContexts;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
@@ -43,22 +35,19 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
-import javax.net.ssl.SSLContext;
 import java.beans.Introspector;
-import java.security.cert.X509Certificate;
 import java.util.*;
 
 /**
  * Registrar to register {@link com.github.ethancommitpush.feign.annotation.FeignClient}s.
  */
-public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware, BeanFactoryAware, EnvironmentAware {
+public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware, EnvironmentAware {
 
     private static final String BASE_PACKAGES_KEY = "feign.base-packages";
     private static final String LOG_LEVEL_KEY = "feign.log-level";
 
     private Environment environment;
     private ResourceLoader resourceLoader;
-    private BeanFactory beanFactory;
 
     /**
      * Trigger registering feign clients, but actually metadata and registry are not used at all.
@@ -68,13 +57,13 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
      */
     @Override
     public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
-        registerFeignClients();
+        registerFeignClients(registry);
     }
 
     /**
      * Scan all interfaces declared with &#64;FeignClient and collect className, attributes, and logLevel.
      */
-    public void registerFeignClients() {
+    public void registerFeignClients(BeanDefinitionRegistry registry) {
         ClassPathScanningCandidateComponentProvider scanner = getScanner();
         scanner.setResourceLoader(this.resourceLoader);
 
@@ -94,7 +83,7 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
                 .filter(meta -> meta.isInterface())
                 .forEach(meta -> {
                     Map<String, Object> attributes = meta.getAnnotationAttributes(FeignClient.class.getCanonicalName());
-                    registerFeignClient(meta.getClassName(), attributes, logLevel);
+                    registerFeignClient(registry, meta.getClassName(), attributes, logLevel);
                 });
     }
 
@@ -104,59 +93,39 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
      * @param attributes attributes of the &#64;FeignClient annotation.
      * @param logLevel log level configured at property file or as default value: BASIC.
      */
-    private void registerFeignClient(String className, Map<String, Object> attributes, String logLevel) {
+    private void registerFeignClient(BeanDefinitionRegistry registry, String className, Map<String, Object> attributes, String logLevel) {
         String shortClassName = ClassUtils.getShortName(className);
         String beanName =  Introspector.decapitalize(shortClassName);
-        Encoder encoder = getEncoder(attributes);
+        //Encoder encoder = getEncoder(attributes);
+        //Decoder decoder = getDecoder(attributes);
         Class<?> apiType = null;
         try {
             apiType = Class.forName(className);
         } catch (Exception e) {
 
         }
-        Object bean = feignBuild(apiType, resolve((String) attributes.get("url")), encoder, logLevel);
-        ((ConfigurableListableBeanFactory) beanFactory).registerSingleton(beanName, bean);
-    }
 
-    /**
-     * Generate feign client.
-     * @param apiType class type of the interface which declared with &#64;FeignClient.
-     * @param url url from the attributes of the &#64;FeignClient annotation.
-     * @param encoder encoder from the attributes of the &#64;FeignClient annotation.
-     * @param logLevel log level.
-     * @return generated feign client.
-     */
-    private <T> T feignBuild(Class<T> apiType, String url, Encoder encoder, String logLevel) {
-        Feign.Builder builder = Feign.builder()
-                .client(new ApacheHttpClient(getHttpClient()))
-                .errorDecoder(new CustomErrorDecoder())
-                .decoder(new JacksonDecoder())
-                .logger(new Logger.ErrorLogger())
-                .logLevel(Logger.Level.valueOf(logLevel));
-        builder.encoder(encoder != null ? encoder : new JacksonEncoder());
+        String url = resolve((String) attributes.get("url"));
 
-        return builder.target(apiType, url);
-    }
+        BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(FeignClientsFactory.class);
 
-    /**
-     * Get a default httpClient which trust self-signed certificates.
-     * @return default httpClient.
-     */
-    private CloseableHttpClient getHttpClient() {
-        CloseableHttpClient httpClient = null;
-        try {
-            //To trust self-signed certificates
-            TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-            SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
-            SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
-            httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
-        } catch (Exception e) {
-        }
-        return httpClient;
+		definition.addPropertyValue("apiType", apiType);
+        definition.addPropertyValue("url", url);
+		//definition.addPropertyValue("encoder", encoder);
+		//definition.addPropertyValue("decoder", decoder);
+		definition.addPropertyValue("logLevel", logLevel);
+		definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
+
+		AbstractBeanDefinition beanDefinition = definition.getBeanDefinition();
+		beanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, className);
+
+		BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, beanName);
+		BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
     }
 
     /**
      * Get the encoder value from the attributes of the &#64;FeignClient annotation.
+     * 
      * @return encoder.
      */
     private Encoder getEncoder(Map<String, Object> attributes) {
@@ -170,6 +139,24 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
         } catch (Exception e) {
         }
         return encoder;
+    }
+
+    /**
+     * Get the decoder value from the attributes of the &#64;FeignClient annotation.
+     * 
+     * @return decoder.
+     */
+    private Decoder getDecoder(Map<String, Object> attributes) {
+        if (attributes.get("decoder") == null) {
+            return null;
+        }
+
+        Decoder decoder = null;
+        try {
+            decoder = (Decoder) ((Class<?>) attributes.get("decoder")).newInstance();
+        } catch (Exception e) {
+        }
+        return decoder;
     }
 
     /**
@@ -207,18 +194,6 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
     @Override
     public void setResourceLoader(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
-    }
-
-    /**
-     * Supply the owning factory to a bean instance.
-     * @param beanFactory owning BeanFactory (never {@code null}).
-     * The bean can immediately call methods on the factory.
-     * @throws BeansException in case of initialization errors
-     * @see org.springframework.beans.factory.BeanFactoryAware
-     */
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
     }
 
     /**
