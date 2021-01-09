@@ -22,6 +22,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import javax.net.ssl.SSLContext;
 
 import java.security.cert.X509Certificate;
+import java.util.Map;
 
 /**
  * 
@@ -44,6 +45,8 @@ public class FeignClientsFactory implements FactoryBean<Object>, InitializingBea
     @Autowired
     private ErrorDecoder errorDecoder;
     
+    private Map<String, Object> attributes;
+    
     private final FeignClientsProperties properties;
 
     public FeignClientsFactory(FeignClientsProperties properties) {
@@ -54,8 +57,7 @@ public class FeignClientsFactory implements FactoryBean<Object>, InitializingBea
     public  void afterPropertiesSet() throws Exception {
         System.out.println("---------------------------------- apiType=" + apiType + ", url=" + url 
                 + ", errorDecoder=" + errorDecoder
-                + ", decoder=" + decoder
-                + ", encoder=" + encoder + ", logLevel=" + getProperties().getLogLevel());
+                + ", attributes="  + attributes
     }
 
     @Override

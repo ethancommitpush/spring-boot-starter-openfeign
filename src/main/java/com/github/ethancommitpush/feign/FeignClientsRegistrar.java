@@ -108,6 +108,7 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
 
 		definition.addPropertyValue("apiType", apiType);
         definition.addPropertyValue("url", url);
+        definition.addPropertyValue("attributes", attributes);
 		definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
 
 		AbstractBeanDefinition beanDefinition = definition.getBeanDefinition();
