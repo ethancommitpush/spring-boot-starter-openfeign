@@ -13,7 +13,10 @@
  */
 package com.github.ethancommitpush.feign;
 
+import java.beans.BeanProperty;
+
 import com.github.ethancommitpush.feign.annotation.FeignClient;
+import com.github.ethancommitpush.feign.decoder.CustomErrorDecoder;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -23,6 +26,7 @@ import org.springframework.context.annotation.Import;
 
 import feign.codec.Decoder;
 import feign.codec.Encoder;
+import feign.codec.ErrorDecoder;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 
@@ -35,8 +39,10 @@ import feign.jackson.JacksonEncoder;
 @Import(FeignClientsRegistrar.class)
 public class FeignClientsAutoConfiguration {
 
-    public FeignClientsAutoConfiguration() {
-        System.out.println("------------------------------- starter FeignClientsAutoConfiguration.ctor");
+    @Bean
+    @ConditionalOnMissingBean(ErrorDecoder.class)
+    public ErrorDecoder errorDecoder() {
+        return new CustomErrorDecoder();
     }
 
     @Bean

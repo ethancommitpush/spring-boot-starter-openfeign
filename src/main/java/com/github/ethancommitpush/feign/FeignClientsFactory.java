@@ -4,6 +4,7 @@ import feign.Feign;
 import feign.Logger;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
+import feign.codec.ErrorDecoder;
 import feign.httpclient.ApacheHttpClient;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,8 +18,6 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import javax.net.ssl.SSLContext;
-
-import com.github.ethancommitpush.feign.decoder.CustomErrorDecoder;
 
 import java.security.cert.X509Certificate;
 
@@ -38,12 +37,16 @@ public class FeignClientsFactory implements FactoryBean<Object>, InitializingBea
 
     @Autowired
     private Decoder decoder;
+
+    @Autowired
+    private ErrorDecoder errorDecoder;
     
     private String logLevel;
 
     @Override
     public  void afterPropertiesSet() throws Exception {
         System.out.println("---------------------------------- apiType=" + apiType + ", url=" + url 
+                + ", errorDecoder=" + errorDecoder
                 + ", decoder=" + decoder
                 + ", encoder=" + encoder + ", logLevel=" + logLevel);
     }
@@ -84,11 +87,14 @@ public class FeignClientsFactory implements FactoryBean<Object>, InitializingBea
      */
     private <T> T feignBuild(Class<T> apiType, String url, Encoder encoder, String logLevel) {
         Feign.Builder builder = Feign.builder().client(new ApacheHttpClient(getHttpClient()))
-                .errorDecoder(new CustomErrorDecoder())
                 .encoder(getEncoder())
                 .decoder(getDecoder())
                 .logger(new Logger.ErrorLogger())
                 .logLevel(Logger.Level.valueOf(logLevel));
+
+        if (getErrorDecoder() != null) {
+            builder.errorDecoder(getErrorDecoder());
+        }
 
         return builder.target(apiType, url);
     }
