@@ -20,8 +20,10 @@ import lombok.ToString;
 @ToString
 public class FeignClientsProperties {
 
-    private String logLevel = Logger.Level.BASIC.name();
-    
+    private Logger.Level logLevel = Logger.Level.BASIC;
+
+    private FeignLoggerKind loggerKind = FeignLoggerKind.SYSTEM_ERR;
+
     /**
      * Default decoder class. 
      * The decoder class must implement the class feign.codec.Decoder.
