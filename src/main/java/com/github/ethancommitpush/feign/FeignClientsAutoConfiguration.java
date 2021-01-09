@@ -56,7 +56,7 @@ public class FeignClientsAutoConfiguration {
     public Decoder defaultDecoder() {
         System.out.println("------------------------starter decoder--------------------------->");
         
-        Class<? extends Decoder> decoderClass = getProperties().getDecoderClass();
+        Class<? extends Decoder> decoderClass = getProperties().getDefaultDecoderClass();
 
         try {
             return (Decoder) decoderClass.newInstance();
@@ -70,7 +70,7 @@ public class FeignClientsAutoConfiguration {
     public Encoder defaultEncoder() {
         System.out.println("------------------------starter encoder--------------------------->");
 
-        Class<? extends Encoder> encoderClass = getProperties().getEncoderClass();
+        Class<? extends Encoder> encoderClass = getProperties().getDefaultEncoderClass();
         try {
             return (Encoder) encoderClass.newInstance();
         } catch (Exception e) {

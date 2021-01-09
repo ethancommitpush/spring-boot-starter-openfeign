@@ -19,8 +19,8 @@ public class FeignClientsProperties {
 
     private String logLevel = Logger.Level.BASIC.name();
 
-    private Class<? extends Decoder> decoderClass = JacksonDecoder.class;
+    private Class<? extends Decoder> defaultDecoderClass = JacksonDecoder.class;
 
-    private Class<? extends Encoder> encoderClass = JacksonEncoder.class;
+    private Class<? extends Encoder> defaultEncoderClass = JacksonEncoder.class;
 
 }
