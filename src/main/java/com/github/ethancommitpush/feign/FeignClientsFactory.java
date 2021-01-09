@@ -18,7 +18,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
@@ -33,36 +32,29 @@ import java.util.Map;
 @Getter
 @Setter
 @EnableConfigurationProperties(FeignClientsProperties.class)
-public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryAware, InitializingBean {
-    
+public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryAware {
+
     private BeanFactory beanFactory;
 
     private Class<T> apiType;
-    
+
     private String url;
-    
-    @Autowired 
-    private Encoder defaultFeignEncoder;
 
     @Autowired
-    private Decoder defaultFeignDecoder;
+    private Encoder feignEncoder;
 
     @Autowired
-    private ErrorDecoder errorDecoder;
+    private Decoder feignDecoder;
+
+    @Autowired
+    private ErrorDecoder feignErrorDecoder;
 
     private Map<String, Object> attributes;
-    
+
     private final FeignClientsProperties properties;
 
     public FeignClientsFactory(FeignClientsProperties properties) {
         this.properties = properties;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        System.out.println("---------------------------------- apiType=" + apiType + ", url=" + url + ", errorDecoder="
-                + errorDecoder + ", attributes=" + attributes + ", defaultEcoder=" + defaultFeignDecoder
-                + ", defaultEncoder=" + defaultFeignEncoder + ", logLevel=" + getProperties().getLogLevel());
     }
 
     @Override
@@ -100,14 +92,26 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
      * @return generated feign client.
      */
     private T feignBuild() {
-        Feign.Builder builder = Feign.builder().client(new ApacheHttpClient(getHttpClient()))
-                .encoder(resolveEncoder())
-                .decoder(resolveDecoder())
-                .logger(new Logger.ErrorLogger())
-                .logLevel(Logger.Level.valueOf(getProperties().getLogLevel()));
+        Feign.Builder builder = Feign.builder();
+        
+        builder.client(new ApacheHttpClient(getHttpClient()));
 
-        if (getErrorDecoder() != null) {
-            builder.errorDecoder(getErrorDecoder());
+        Encoder encoder = resolveEncoder();
+        if (encoder != null) {
+            builder.encoder(encoder);
+        }
+
+        Decoder decoder = resolveDecoder();
+        if (decoder != null) {
+            builder.decoder(decoder);
+        }
+
+        builder.logger(new Logger.ErrorLogger());
+        builder.logLevel(Logger.Level.valueOf(getProperties().getLogLevel()));
+
+        ErrorDecoder errorDecoder = resolveErrorDecoder();
+        if (errorDecoder != null) {
+            builder.errorDecoder(errorDecoder);
         }
 
         return builder.target(getApiType(), getUrl());
@@ -129,16 +133,16 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
         if (encoderClass == void.class) {
             encoderClass = null;
         }
-        
+
         String encoderBeanName = (String) getAttributes().get("encoderBean");
 
-        Encoder encoder = FeignConfigurationUtils.resolveEncoder(getBeanFactory(), 
-            encoderBeanName, (Class<? extends Encoder>)encoderClass);
+        Encoder encoder = FeignConfigurationUtils.resolveEncoder(getBeanFactory(), encoderBeanName,
+                (Class<? extends Encoder>) encoderClass);
         if (encoder != null) {
-        return encoder;
+            return encoder;
         }
 
-        return getDefaultFeignEncoder();
+        return getFeignEncoder();
     }
 
     /**
@@ -155,14 +159,38 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
 
         String decoderBeanName = (String) getAttributes().get("decoderBean");
 
-        Decoder decoder = FeignConfigurationUtils.resolveDecoder(getBeanFactory(), 
-            decoderBeanName, (Class<? extends Decoder>)decoderClass);
+        Decoder decoder = FeignConfigurationUtils.resolveDecoder(getBeanFactory(), decoderBeanName,
+                (Class<? extends Decoder>) decoderClass);
         if (decoder != null) {
             return decoder;
         }
 
-        return getDefaultFeignDecoder();
+        return getFeignDecoder();
+    }
+
+    /**
+     * Get the default error decoder value from the attributes of the &#64;FeignClient annotation.
+     * 
+     * @return decoder.
+     */
+    @SuppressWarnings("unchecked")
+    public ErrorDecoder resolveErrorDecoder() {
+        Class<?> errorDecoderClass = (Class<?>) getAttributes().get("errorDecoder");
+        if (errorDecoderClass == void.class) {
+            errorDecoderClass = null;
         }
+
+        String errorDecoderBeanName = (String) getAttributes().get("errorDecoderBean");
+
+        ErrorDecoder errorDecoder = FeignConfigurationUtils.resolveErrorDecoder(getBeanFactory(), errorDecoderBeanName,
+                (Class<? extends ErrorDecoder>) errorDecoderClass);
+        if (errorDecoder != null) {
+            return errorDecoder;
+        }
+
+        return getFeignErrorDecoder();
+    }
+
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {

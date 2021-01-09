@@ -84,4 +84,28 @@ public @interface FeignClient {
      */
     String decoderBean() default "";
 
+    /**
+     * Error decoder bean name for the specified Feign client interface, to decode error
+     * in certain way. The error decoder bean class must implement the class feign.codec.ErrorDecoder.
+     * 
+     * Note:
+     * 1) exclusive with attribute 'errorDecoder'
+     * 2) if specified, override FeignClientsProperties.defaultErrorDecoderClass/defaultErrorDecoderBean
+     * 
+     * @return error decoder bean for the specified Feign client interface
+     */
+    String errorDecoderBean() default "";
+
+    /**
+     * Error decoder class for the specified Feign client interface, to decode error
+     * in certain way. The error decoder class must implement the class feign.codec.ErrorDecoder.
+     * 
+     * Note:
+     * 1) exclusive with attribute 'errorDecoderBean'
+     * 2) if specified, override FeignClientsProperties.defaultErrorDecoderClass/defaultErrorDecoderBean
+     * 
+     * @return error decoder class for the specified Feign client interface
+     */
+    Class<?> errorDecoder() default void.class;
+
 }

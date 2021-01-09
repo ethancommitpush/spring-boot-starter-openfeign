@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 
 import feign.codec.Decoder;
 import feign.codec.Encoder;
+import feign.codec.ErrorDecoder;
 
 public class FeignConfigurationUtils {
 
@@ -28,7 +29,7 @@ public class FeignConfigurationUtils {
 
         if (hasBeanName && hasClass) {
             throw new IllegalArgumentException(
-                String.format("feign client %s bean is exclusive with %s class", hint.getSimpleName(), hint.getSimpleName());
+                String.format("feign client %s bean is exclusive with %s class", hint.getSimpleName(), hint.getSimpleName()));
         }
 
         if (hasBeanName) {
@@ -54,6 +55,11 @@ public class FeignConfigurationUtils {
     public static Encoder resolveEncoder(BeanFactory beanFactory, String encoderBeanName,
             Class<? extends Encoder> encoderClass) {
         return resolveOverrideableBean(Encoder.class, beanFactory, encoderBeanName, encoderClass);
+    }
+
+    public static ErrorDecoder resolveErrorDecoder(BeanFactory beanFactory, String errorDecoderBeanName,
+            Class<? extends ErrorDecoder> errorDecoderClass) {
+        return resolveOverrideableBean(ErrorDecoder.class, beanFactory, errorDecoderBeanName, errorDecoderClass);
     }
 
 }

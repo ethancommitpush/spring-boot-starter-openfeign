@@ -1,10 +1,13 @@
 package com.github.ethancommitpush.feign;
 
+import com.github.ethancommitpush.feign.decoder.CustomErrorDecoder;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import feign.Logger;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
+import feign.codec.ErrorDecoder;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import lombok.Getter;
@@ -66,5 +69,29 @@ public class FeignClientsProperties {
      * @return decoder bean
      */
     private String defaultDecoderBean;
+
+    /**
+     * Default error decoder bean name. 
+     * The error decoder bean class must implement the class feign.codec.ErrorDecoder.
+     * 
+     * Note:
+     * 1) exclusive with property 'defaultErorrDecoderBean'
+     * 2) override-able by FeignClient.errorDecoderClass/errorDecoderBean
+     * 
+     * @return error decoder bean
+     */
+    private String defaultErrorDecoderBean;
+    
+    /**
+     * Default error decoder class. 
+     * The error decoder class must implement the class feign.codec.ErrorDecoder.
+     * 
+     * Note:
+     * 1) exclusive with property 'defaultErrorDecoderBean'
+     * 2) override-able by FeignClient.errorDecoderClass/errorDecoderBean
+     * 
+     * @return decoder class
+     */
+    private Class<? extends ErrorDecoder> defaultErrorDecoderClass = CustomErrorDecoder.class;
 
 }

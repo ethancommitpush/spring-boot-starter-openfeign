@@ -14,7 +14,6 @@
 package com.github.ethancommitpush.feign;
 
 import com.github.ethancommitpush.feign.annotation.FeignClient;
-import com.github.ethancommitpush.feign.decoder.CustomErrorDecoder;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -51,14 +50,17 @@ public class FeignClientsAutoConfiguration implements BeanFactoryAware {
     }
 
     @Bean
-    @ConditionalOnMissingBean(ErrorDecoder.class)
-    public ErrorDecoder errorDecoder() {
-        return new CustomErrorDecoder();
+    @ConditionalOnMissingBean(name = "feignErrorDecoder")
+    public ErrorDecoder feignErrorDecoder() {
+        return FeignConfigurationUtils.resolveErrorDecoder(
+            getBeanFactory(), 
+            getProperties().getDefaultErrorDecoderBean(), 
+            getProperties().getDefaultErrorDecoderClass());
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "defaultFeignDecoder")
-    public Decoder defaultFeignDecoder() {
+    @ConditionalOnMissingBean(name = "feignDecoder")
+    public Decoder feignDecoder() {
         System.out.println("------------------------starter decoder--------------------------->");
         
         return FeignConfigurationUtils.resolveDecoder(
@@ -68,8 +70,8 @@ public class FeignClientsAutoConfiguration implements BeanFactoryAware {
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "defaultFeignEncoder")
-    public Encoder defaultFeignEncoder() {
+    @ConditionalOnMissingBean(name = "feignEncoder")
+    public Encoder feignEncoder() {
         System.out.println("------------------------starter encoder--------------------------->");
 
         return FeignConfigurationUtils.resolveEncoder(
