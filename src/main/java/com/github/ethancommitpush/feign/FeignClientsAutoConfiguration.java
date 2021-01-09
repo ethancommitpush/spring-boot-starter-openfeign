@@ -16,6 +16,9 @@ package com.github.ethancommitpush.feign;
 import com.github.ethancommitpush.feign.annotation.FeignClient;
 import com.github.ethancommitpush.feign.decoder.CustomErrorDecoder;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -37,7 +40,9 @@ import lombok.Getter;
 @Import(FeignClientsRegistrar.class)
 @EnableConfigurationProperties(FeignClientsProperties.class)
 @Getter
-public class FeignClientsAutoConfiguration {
+public class FeignClientsAutoConfiguration implements BeanFactoryAware {
+
+    private BeanFactory beanFactory;
 
     private final FeignClientsProperties properties;
 
@@ -52,30 +57,30 @@ public class FeignClientsAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(Decoder.class)
-    public Decoder defaultDecoder() {
+    @ConditionalOnMissingBean(name = "defaultFeignDecoder")
+    public Decoder defaultFeignDecoder() {
         System.out.println("------------------------starter decoder--------------------------->");
         
-        Class<? extends Decoder> decoderClass = getProperties().getDefaultDecoderClass();
-
-        try {
-            return (Decoder) decoderClass.newInstance();
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
+        return FeignConfigurationUtils.resolveDecoder(
+            getBeanFactory(), 
+            getProperties().getDefaultDecoderBean(), 
+            getProperties().getDefaultDecoderClass());
     }
 
     @Bean
-    @ConditionalOnMissingBean(Encoder.class)
-    public Encoder defaultEncoder() {
+    @ConditionalOnMissingBean(name = "defaultFeignEncoder")
+    public Encoder defaultFeignEncoder() {
         System.out.println("------------------------starter encoder--------------------------->");
 
-        Class<? extends Encoder> encoderClass = getProperties().getDefaultEncoderClass();
-        try {
-            return (Encoder) encoderClass.newInstance();
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
+        return FeignConfigurationUtils.resolveEncoder(
+            getBeanFactory(), 
+            getProperties().getDefaultEncoderBean(), 
+            getProperties().getDefaultEncoderClass());
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
     }
 
 }

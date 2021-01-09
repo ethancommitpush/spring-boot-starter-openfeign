@@ -39,8 +39,49 @@ public @interface FeignClient {
     /**
      * Encoder class for the specified Feign client interface, to encode parameters
      * in certain way. The encoder class must implement the class feign.codec.Encoder.
+     * 
+     * Note: 
+     * 1) exclusive with attribute 'encoderBean'
+     * 2) if specified, override FeignClientsProperties.defaultEncoderClass/defaultEncoderBean
+     * 
      * @return encoder class for the specified Feign client interface
      */
     Class<?> encoder() default void.class;
+
+    /**
+     * Decoder class for the specified Feign client interface, to decode parameters
+     * in certain way. The decoder class must implement the class feign.codec.Decoder.
+     * 
+     * Note:
+     * 1) exclusive with attribute 'decoderBean'
+     * 2) if specified, override FeignClientsProperties.defaultDecoderClass/defaultDecoderBean
+     * 
+     * @return decoder class for the specified Feign client interface
+     */
+    Class<?> decoder() default void.class;
+
+    /**
+     * Encoder bean name for the specified Feign client interface, to encode parameters
+     * in certain way. The encoder bean class must implement the class feign.codec.Encoder.
+     * 
+     * Note: 
+     * 1) exclusive with attribute 'encoderBean'
+     * 2) if specified, override FeignClientsProperties.defaultEncoderClass/defaultEncoderBean
+     * 
+     * @return encoder bean for the specified Feign client interface
+     */
+    String encoderBean() default "";
+
+    /**
+     * Encoder bean name for the specified Feign client interface, to decode parameters
+     * in certain way. The decoder bean class must implement the class feign.codec.Decoder.
+     * 
+     * Note:
+     * 1) exclusive with attribute 'decoderBean'
+     * 2) if specified, override FeignClientsProperties.defaultDecoderClass/defaultDecoderBean
+     * 
+     * @return decoder bean for the specified Feign client interface
+     */
+    String decoderBean() default "";
 
 }
