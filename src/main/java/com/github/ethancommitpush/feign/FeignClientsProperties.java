@@ -3,6 +3,10 @@ package com.github.ethancommitpush.feign;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import feign.Logger;
+import feign.codec.Decoder;
+import feign.codec.Encoder;
+import feign.jackson.JacksonDecoder;
+import feign.jackson.JacksonEncoder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,5 +18,9 @@ import lombok.ToString;
 public class FeignClientsProperties {
 
     private String logLevel = Logger.Level.BASIC.name();
+
+    private Class<? extends Decoder> decoderClass = JacksonDecoder.class;
+
+    private Class<? extends Encoder> encoderClass = JacksonEncoder.class;
 
 }

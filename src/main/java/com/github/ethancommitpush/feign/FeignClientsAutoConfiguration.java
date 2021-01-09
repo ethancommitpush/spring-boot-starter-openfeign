@@ -18,6 +18,7 @@ import com.github.ethancommitpush.feign.decoder.CustomErrorDecoder;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -25,8 +26,7 @@ import org.springframework.context.annotation.Import;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.codec.ErrorDecoder;
-import feign.jackson.JacksonDecoder;
-import feign.jackson.JacksonEncoder;
+import lombok.Getter;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -35,7 +35,15 @@ import feign.jackson.JacksonEncoder;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ FeignClient.class })
 @Import(FeignClientsRegistrar.class)
+@EnableConfigurationProperties(FeignClientsProperties.class)
+@Getter
 public class FeignClientsAutoConfiguration {
+
+    private final FeignClientsProperties properties;
+
+    public FeignClientsAutoConfiguration(FeignClientsProperties properties) {
+        this.properties = properties;
+    }
 
     @Bean
     @ConditionalOnMissingBean(ErrorDecoder.class)
@@ -45,16 +53,29 @@ public class FeignClientsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(Decoder.class)
-    public Decoder decoder() {
+    public Decoder defaultDecoder() {
         System.out.println("------------------------starter decoder--------------------------->");
-        return new JacksonDecoder();
+        
+        Class<? extends Decoder> decoderClass = getProperties().getDecoderClass();
+
+        try {
+            return (Decoder) decoderClass.newInstance();
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Bean
     @ConditionalOnMissingBean(Encoder.class)
-    public Encoder encoder() {
+    public Encoder defaultEncoder() {
         System.out.println("------------------------starter encoder--------------------------->");
-        return new JacksonEncoder();
+
+        Class<? extends Encoder> encoderClass = getProperties().getEncoderClass();
+        try {
+            return (Encoder) encoderClass.newInstance();
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
 }

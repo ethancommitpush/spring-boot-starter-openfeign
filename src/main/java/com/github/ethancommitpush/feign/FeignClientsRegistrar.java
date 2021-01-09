@@ -14,8 +14,6 @@
 package com.github.ethancommitpush.feign;
 
 import com.github.ethancommitpush.feign.annotation.FeignClient;
-import feign.codec.Decoder;
-import feign.codec.Encoder;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
