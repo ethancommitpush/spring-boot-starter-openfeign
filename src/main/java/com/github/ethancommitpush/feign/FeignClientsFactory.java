@@ -30,9 +30,9 @@ import java.util.Map;
 @Getter
 @Setter
 @EnableConfigurationProperties(FeignClientsProperties.class)
-public class FeignClientsFactory implements FactoryBean<Object>, InitializingBean {
+public class FeignClientsFactory<T> implements FactoryBean<Object>, InitializingBean {
     
-    private Class<?> apiType;
+    private Class<T> apiType;
     
     private String url;
     
@@ -94,7 +94,7 @@ public class FeignClientsFactory implements FactoryBean<Object>, InitializingBea
      * @param logLevel log level.
      * @return generated feign client.
      */
-    private <T> T feignBuild(Class<T> apiType, String url, Encoder encoder, String logLevel) {
+    private T feignBuild() {
         Feign.Builder builder = Feign.builder().client(new ApacheHttpClient(getHttpClient()))
                 .encoder(getEncoder())
                 .decoder(getDecoder())
