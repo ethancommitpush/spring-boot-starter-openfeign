@@ -21,22 +21,23 @@ import feign.codec.Encoder;
 
 public class FeignConfigurationUtils {
 
-    public static Decoder resolveDecoder(BeanFactory beanFactory, String decoderBeanName,
-            Class<? extends Decoder> decoderClass) {
-        boolean hasBeanName = !StringUtils.isEmpty(decoderBeanName);
-        boolean hasClass = (decoderClass != null);
+    public static <T> T resolveOverrideableBean(Class<T> hint, BeanFactory beanFactory, String beanName,
+            Class<? extends T> beanClass) {
+        boolean hasBeanName = !StringUtils.isEmpty(beanName);
+        boolean hasClass = (beanClass != null);
 
         if (hasBeanName && hasClass) {
-            throw new IllegalArgumentException("feign client decoder bean is exclusive with decoder class");
+            throw new IllegalArgumentException(
+                String.format("feign client %s bean is exclusive with %s class", hint.getSimpleName(), hint.getSimpleName());
         }
 
         if (hasBeanName) {
-            return beanFactory.getBean(decoderBeanName, Decoder.class);
+            return beanFactory.getBean(beanName, hint);
         }
 
         if (hasClass) {
             try {
-                return (Decoder) decoderClass.getDeclaredConstructor().newInstance();
+                return (T) beanClass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new IllegalArgumentException(e);
             }
@@ -45,28 +46,14 @@ public class FeignConfigurationUtils {
         return null;
     }
 
+    public static Decoder resolveDecoder(BeanFactory beanFactory, String decoderBeanName,
+            Class<? extends Decoder> decoderClass) {
+        return resolveOverrideableBean(Decoder.class, beanFactory, decoderBeanName, decoderClass);
+    }
+
     public static Encoder resolveEncoder(BeanFactory beanFactory, String encoderBeanName,
             Class<? extends Encoder> encoderClass) {
-        boolean hasBeanName = !StringUtils.isEmpty(encoderBeanName);
-        boolean hasClass = (encoderClass != null);
-
-        if (hasBeanName && hasClass) {
-            throw new IllegalArgumentException("feign client encoder bean is exclusive with encoder class");
-        }
-
-        if (hasBeanName) {
-            return beanFactory.getBean(encoderBeanName, Encoder.class);
-        }
-
-        if (hasClass) {
-            try {
-                return (Encoder) encoderClass.getDeclaredConstructor().newInstance();
-            } catch (ReflectiveOperationException e) {
-                throw new IllegalArgumentException(e);
-            }
-        }
-
-        return null;
+        return resolveOverrideableBean(Encoder.class, beanFactory, encoderBeanName, encoderClass);
     }
 
 }
