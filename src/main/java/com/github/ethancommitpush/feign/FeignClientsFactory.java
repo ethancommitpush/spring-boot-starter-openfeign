@@ -51,8 +51,6 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
 
     private Class<T> apiType;
 
-    private String url;
-
     @Autowired
     private Encoder feignEncoder;
 
@@ -132,6 +130,10 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
         }
 
         return builder.target(getApiType(), getUrl());
+    }
+
+    public String getUrl() {
+        return (String)getAttributes().get("url");
     }
     
 
