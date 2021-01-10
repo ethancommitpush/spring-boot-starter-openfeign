@@ -11,8 +11,18 @@ There is no any configures about Ribbon or Eureka for this library, just simply 
 
 
 ## What's new?
+### Update 01/09/2021: Version 1.1.3 Release Includes
+* Fix CustomErrorDecoder error and upgrade to compatible with feign ^10.7.3 ~10.12
 ### Update 11/17/2020: Version 1.1.2 Release Includes
 * Replace default encoder with JacksonEncoder
+
+## Requirements
+The following table shows the feign versions that are used by version of spring-boot-starter-openfeign:
+
+| spring-boot-starter-openfeign        | feign  |
+| ------------- |:-------------:|
+| 1.1.3      | ^10.7.3 |
+| 1.1.2      | 10.7.2 |
 
 ## Maven configuration
 
@@ -22,14 +32,35 @@ Add the Maven dependency:
 <dependency>
   <groupId>com.github.ethancommitpush</groupId>
   <artifactId>spring-boot-starter-openfeign</artifactId>
-  <version>1.1.2</version>
+  <version>1.1.3</version>
+</dependency>
+
+<dependency>
+  <groupId>io.github.openfeign</groupId>
+  <artifactId>feign-core</artifactId>
+  <version>10.7.3</version>
+</dependency>
+
+<dependency>
+  <groupId>io.github.openfeign</groupId>
+  <artifactId>feign-jackson</artifactId>
+  <version>10.7.3</version>
+</dependency>
+
+<dependency>
+  <groupId>io.github.openfeign</groupId>
+  <artifactId>feign-httpclient</artifactId>
+  <version>10.7.3</version>
 </dependency>
 ```
 
 ## Gradle 
 
 ```groovy
-compile group: 'com.github.ethancommitpush', name: 'spring-boot-starter-openfeign', version: '1.1.2'
+compile group: 'com.github.ethancommitpush', name: 'spring-boot-starter-openfeign', version: '1.1.3'
+compile group: 'io.github.openfeign', name: 'feign-core', version: '10.7.3'
+compile group: 'io.github.openfeign', name: 'feign-jackson', version: '10.7.3'
+compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.7.3'
 ```
 
 # Usage
