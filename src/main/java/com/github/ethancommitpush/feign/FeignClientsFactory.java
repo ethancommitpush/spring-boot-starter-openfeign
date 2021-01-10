@@ -84,7 +84,7 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
     private T feignBuild() {
         Feign.Builder builder = Feign.builder();
         
-        Client client = getFeignClient();
+        Client client = resolveClient();
         if (client != null) {
             builder.client(client);
         }
@@ -122,6 +122,25 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
     @Override
     public Class<?> getObjectType() {
         return this.apiType;
+    }
+
+    /**
+     * Resolves the http client from either &#64;FeignClient annotation or default properties
+     * 
+     * @return client.
+     */
+    @SuppressWarnings("unchecked")
+    public Client resolveClient() {
+        Class<?> clientClass = (Class<?>) getAttributes().get("client");
+        String clientBeanName = (String) getAttributes().get("clientBean");
+
+        Client client = FeignConfigurationUtils.resolveClient(getBeanFactory(), clientBeanName,
+                (Class<? extends Client>) clientClass);
+        if (client != null) {
+            return client;
+        }
+
+        return getFeignClient();
     }
 
     /**

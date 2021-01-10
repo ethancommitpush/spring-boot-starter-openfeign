@@ -108,4 +108,28 @@ public @interface FeignClient {
      */
     Class<?> errorDecoder() default void.class;
 
+    /**
+     * http client class for the specified Feign client interface. 
+     * The client class must implement the class feign.Client.
+     * 
+     * Note:
+     * 1) exclusive with attribute 'clientBean'
+     * 2) if specified, override FeignClientsProperties.defaultClientClass/defaultClientBean
+     * 
+     * @return client class for the specified Feign client interface
+     */
+    Class<?> client() default void.class;
+
+    /**
+     * http client bean name for the specified Feign client interface. 
+     * The client bean class must implement the class feign.Client.
+     * 
+     * Note: 
+     * 1) exclusive with attribute 'client'
+     * 2) if specified, override FeignClientsProperties.defaultClientClass/defaulClientBean
+     * 
+     * @return client bean for the specified Feign client interface
+     */
+    String clientBean() default "";
+
 }

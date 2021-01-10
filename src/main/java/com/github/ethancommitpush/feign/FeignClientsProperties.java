@@ -17,6 +17,7 @@ import com.github.ethancommitpush.feign.decoder.CustomErrorDecoder;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import feign.Client;
 import feign.Logger;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
@@ -108,5 +109,29 @@ public class FeignClientsProperties {
      * @return decoder class
      */
     private Class<? extends ErrorDecoder> defaultErrorDecoderClass = CustomErrorDecoder.class;
+
+    /**
+     * Default http client class.
+     * The client class must implement the class feign.Client.
+     * 
+     * Note: 
+     * 1) exclusive with property 'defaultClientBean'
+     * 2) override-able by FeignClient.client/clientBean
+     * 
+     * @return client class
+     */
+    private Class<Client> defaultClientClass;
+    
+    /**
+     * Default client bean name.
+     * The cilent bean class must implement the class feign.Client.
+     * 
+     * Note: 
+     * 1) exclusive with property 'defaultClientBean'
+     * 2) override-able by FeignClient.client/clientBean
+     * 
+     * @return client bean name
+     */
+    private String defaultClientBean;
 
 }

@@ -32,7 +32,10 @@ import com.github.ethancommitpush.feign.example.TargetInterface;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.core.env.Environment;
 
+import feign.Client;
 import feign.FeignException;
+import feign.Request;
+import feign.Request.Options;
 import feign.RequestTemplate;
 import feign.Response;
 import feign.codec.DecodeException;
@@ -58,6 +61,9 @@ public class FeignClientsFactoryTest {
     @Mock
     private ErrorDecoder feignErrorDecoder;
 
+    @Mock
+    private Client feignClient;
+
     private FeignClientsProperties properties = new FeignClientsProperties();
 
     @InjectMocks
@@ -82,7 +88,7 @@ public class FeignClientsFactoryTest {
 
         this.attributes.put("url", "http://test");
         when(this.environment.resolvePlaceholders("http://test")).thenReturn("http://test");
-        
+
         Object actual = this.target.getObject();
         Assert.assertNotNull(actual);
         Assert.assertTrue(actual instanceof TargetInterface);
@@ -124,7 +130,7 @@ public class FeignClientsFactoryTest {
     }
 
     @Test
-    public void test_resolveEncoder_withAttribute_class() {        
+    public void test_resolveEncoder_withAttribute_class() {
         this.attributes.put("encoder", MyEncoder.class);
 
         Encoder actual = this.target.resolveEncoder();
@@ -157,14 +163,15 @@ public class FeignClientsFactoryTest {
     }
 
     @Test
-    public void test_resolveDecoder_withAttribute_class() {        
+    public void test_resolveDecoder_withAttribute_class() {
         this.attributes.put("decoder", MyDecoder.class);
 
         Decoder actual = this.target.resolveDecoder();
         Assert.assertTrue(actual.getClass() == MyDecoder.class);
     }
 
-    static class MyErrorDecoder extends CustomErrorDecoder {}
+    static class MyErrorDecoder extends CustomErrorDecoder {
+    }
 
     @Test
     public void test_resolveErrorDecoder_withDefaultOne() {
@@ -175,16 +182,16 @@ public class FeignClientsFactoryTest {
     @Test
     public void test_resolveErrorDecoder_withAttribute_bean() {
         ErrorDecoder expected = new CustomErrorDecoder();
-        
+
         this.attributes.put("errorDecoderBean", "myErrorDecoderBean");
         when(this.beanFactory.getBean("myErrorDecoderBean", ErrorDecoder.class)).thenReturn(expected);
-        
+
         ErrorDecoder actual = this.target.resolveErrorDecoder();
         Assert.assertSame(expected, actual);
     }
 
     @Test
-    public void test_resolveErrorDecoder_withAttribute_class() {        
+    public void test_resolveErrorDecoder_withAttribute_class() {
         this.attributes.put("errorDecoder", MyErrorDecoder.class);
 
         ErrorDecoder actual = this.target.resolveErrorDecoder();
@@ -198,9 +205,42 @@ public class FeignClientsFactoryTest {
 
         String actual = this.target.resolveAttribute(value);
         Assert.assertEquals("got", actual);
-        
+
         when(this.environment.resolvePlaceholders(any())).thenReturn(value);
         Assert.assertEquals(value, this.target.resolveAttribute(value));
+    }
+
+    static class MyClient implements Client {
+
+        @Override
+        public Response execute(Request request, Options options) throws IOException {
+            throw new RuntimeException("should not be here");
+        }
+    }
+
+    @Test
+    public void test_resolveClient_withDefaultOne() {
+        Client actual = this.target.resolveClient();
+        Assert.assertSame(this.feignClient, actual);
+    }
+
+    @Test
+    public void test_resolveClient_withAttribute_bean() {
+        Client expected = new MyClient();
+
+        this.attributes.put("clientBean", "myClientBean");
+        when(this.beanFactory.getBean("myClientBean", Client.class)).thenReturn(expected);
+
+        Client actual = this.target.resolveClient();
+        Assert.assertSame(expected, actual);
+    }
+
+    @Test
+    public void test_resolveClient_withAttribute_class() {        
+        this.attributes.put("client", MyClient.class);
+
+        Client actual = this.target.resolveClient();
+        Assert.assertTrue(actual.getClass() == MyClient.class);
     }
 
 }

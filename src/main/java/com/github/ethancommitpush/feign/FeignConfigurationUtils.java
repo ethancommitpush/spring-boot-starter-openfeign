@@ -16,6 +16,7 @@ package com.github.ethancommitpush.feign;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.util.StringUtils;
 
+import feign.Client;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.codec.ErrorDecoder;
@@ -61,6 +62,11 @@ public class FeignConfigurationUtils {
     public static ErrorDecoder resolveErrorDecoder(BeanFactory beanFactory, String errorDecoderBeanName,
             Class<? extends ErrorDecoder> errorDecoderClass) {
         return resolveOverrideableBean(ErrorDecoder.class, beanFactory, errorDecoderBeanName, errorDecoderClass);
+    }
+
+    public static Client resolveClient(BeanFactory beanFactory, String clientBeanName,
+            Class<? extends Client> clientClass) {
+        return resolveOverrideableBean(Client.class, beanFactory, clientBeanName, clientClass);
     }
 
 }
