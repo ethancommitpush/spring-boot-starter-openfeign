@@ -72,9 +72,7 @@ public class FeignClientsAutoConfiguration implements BeanFactoryAware {
 
     @Bean
     @ConditionalOnMissingBean(name = "feignDecoder")
-    public Decoder feignDecoder() {
-        System.out.println("------------------------starter decoder--------------------------->");
-        
+    public Decoder feignDecoder() {        
         return FeignConfigurationUtils.resolveDecoder(
             getBeanFactory(), 
             getProperties().getDefaultDecoderBean(), 
@@ -84,8 +82,6 @@ public class FeignClientsAutoConfiguration implements BeanFactoryAware {
     @Bean
     @ConditionalOnMissingBean(name = "feignEncoder")
     public Encoder feignEncoder() {
-        System.out.println("------------------------starter encoder--------------------------->");
-
         return FeignConfigurationUtils.resolveEncoder(
             getBeanFactory(), 
             getProperties().getDefaultEncoderBean(), 
@@ -100,7 +96,6 @@ public class FeignClientsAutoConfiguration implements BeanFactoryAware {
     @Bean
     @ConditionalOnMissingBean(name = "feignClient")
     public Client feignClient() {
-        System.out.println("------------------------starter feign client--------------------------->");
         return new ApacheHttpClient(getHttpClient());
     }
     /**
