@@ -16,23 +16,14 @@ package com.github.ethancommitpush.feign;
 import org.junit.Test;
 import org.junit.Assert;
 import static org.mockito.Mockito.*;
+
+import com.github.ethancommitpush.feign.example.TargetClassOK;
+import com.github.ethancommitpush.feign.example.TargetClassWrong;
+import com.github.ethancommitpush.feign.example.TargetInterface;
+
 import org.springframework.beans.factory.BeanFactory;
 
 public class FeignConfigurationUtilsTest {
-    
-    static interface TargetInterface {
-
-    }
-
-    static class TargetClassOK implements TargetInterface {
-
-    }
-
-    static class TargetClassWrong implements TargetInterface {
-        TargetClassWrong() {
-            throw new RuntimeException("mock error");
-        }
-    }
 
     @Test(expected = IllegalArgumentException.class)
     public void test_resolveOverrideableBean_bothBeanNameAndClass() {
@@ -40,6 +31,18 @@ public class FeignConfigurationUtilsTest {
         
         FeignConfigurationUtils.resolveOverrideableBean(TargetInterface.class, 
             bf, "target", TargetClassOK.class);
+    }
+
+    @Test
+    public void test_resolveOverrideableBean_withBeanNameAndVoidClass() {
+        TargetClassOK expected = new TargetClassOK();
+
+        BeanFactory bf = mock(BeanFactory.class);
+        when(bf.getBean("target", TargetInterface.class)).thenReturn(expected);
+        
+        TargetInterface actual = FeignConfigurationUtils.resolveOverrideableBean(TargetInterface.class, 
+            bf, "target", void.class);
+        Assert.assertSame(expected, actual);
     }
 
     @Test
