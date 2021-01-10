@@ -44,7 +44,7 @@ public class FeignClientsProperties {
      * 
      * Note:
      * 1) exclusive with property 'defaultDecoderBean'
-     * 2) override-able by FeignClient.decoderClass/decoderBean
+     * 2) override-able by FeignClient.decoder/decoderBean
      * 
      * @return decoder class
      */
@@ -56,7 +56,7 @@ public class FeignClientsProperties {
      * 
      * Note: 
      * 1) exclusive with property 'defaultEncoderBean'
-     * 2) override-able by FeignClient.encoderClass/encoderBean
+     * 2) override-able by FeignClient.encoder/encoderBean
      * 
      * @return encoder class
      */
@@ -68,9 +68,9 @@ public class FeignClientsProperties {
      * 
      * Note: 
      * 1) exclusive with property 'defaultEncoderBean'
-     * 2) override-able by FeignClient.encoderClass/encoderBean
+     * 2) override-able by FeignClient.encoder/encoderBean
      * 
-     * @return encoder bean
+     * @return encoder bean name
      */
     private String defaultEncoderBean;
 
@@ -80,9 +80,9 @@ public class FeignClientsProperties {
      * 
      * Note:
      * 1) exclusive with property 'defaultDecoderBean'
-     * 2) override-able by FeignClient.decoderClass/decoderBean
+     * 2) override-able by FeignClient.decoder/decoderBean
      * 
-     * @return decoder bean
+     * @return decoder bean name
      */
     private String defaultDecoderBean;
 
@@ -92,9 +92,9 @@ public class FeignClientsProperties {
      * 
      * Note:
      * 1) exclusive with property 'defaultErorrDecoderBean'
-     * 2) override-able by FeignClient.errorDecoderClass/errorDecoderBean
+     * 2) override-able by FeignClient.errorDecoder/errorDecoderBean
      * 
-     * @return error decoder bean
+     * @return error decoder bean name
      */
     private String defaultErrorDecoderBean;
     
@@ -104,7 +104,7 @@ public class FeignClientsProperties {
      * 
      * Note:
      * 1) exclusive with property 'defaultErrorDecoderBean'
-     * 2) override-able by FeignClient.errorDecoderClass/errorDecoderBean
+     * 2) override-able by FeignClient.errorDecoder/errorDecoderBean
      * 
      * @return decoder class
      */

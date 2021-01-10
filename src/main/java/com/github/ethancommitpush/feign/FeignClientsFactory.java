@@ -127,7 +127,7 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
     /**
      * Resolves the http client from either &#64;FeignClient annotation or default properties
      * 
-     * @return client.
+     * @return client
      */
     @SuppressWarnings("unchecked")
     public Client resolveClient() {
@@ -144,9 +144,9 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
     }
 
     /**
-     * Get the encoder value from the attributes of the &#64;FeignClient annotation.
+     * Resolves the encoder from either &#64;FeignClient annotation or default properties
      * 
-     * @return encoder.
+     * @return encoder
      */
     @SuppressWarnings("unchecked")
     public Encoder resolveEncoder() {
@@ -163,9 +163,9 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
     }
 
     /**
-     * Get the decoder value from the attributes of the &#64;FeignClient annotation.
+     * Resolves the decoder from either &#64;FeignClient annotation or default properties
      * 
-     * @return decoder.
+     * @return decoder
      */
     @SuppressWarnings("unchecked")
     public Decoder resolveDecoder() {
@@ -182,9 +182,9 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
     }
 
     /**
-     * Get the default error decoder value from the attributes of the &#64;FeignClient annotation.
+     * Resolves the error decoder from either &#64;FeignClient annotation or default properties
      * 
-     * @return decoder.
+     * @return error decoder
      */
     @SuppressWarnings("unchecked")
     public ErrorDecoder resolveErrorDecoder() {
