@@ -89,6 +89,8 @@ public class FeignClientsFactoryTest {
         this.attributes.put("url", "http://test");
         when(this.environment.resolvePlaceholders("http://test")).thenReturn("http://test");
 
+        // TODO: verify how codec/client is invoked
+        
         Object actual = this.target.getObject();
         Assert.assertNotNull(actual);
         Assert.assertTrue(actual instanceof TargetInterface);
