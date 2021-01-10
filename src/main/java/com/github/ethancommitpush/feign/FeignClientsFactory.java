@@ -33,6 +33,9 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.util.StringUtils;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 
 import javax.net.ssl.SSLContext;
 
@@ -45,9 +48,11 @@ import java.util.Map;
 @Getter
 @Setter
 @EnableConfigurationProperties(FeignClientsProperties.class)
-public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryAware {
+public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryAware, EnvironmentAware {
 
     private BeanFactory beanFactory;
+
+    private Environment environment;
 
     private Class<T> apiType;
 
@@ -133,7 +138,7 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
     }
 
     public String getUrl() {
-        return (String)getAttributes().get("url");
+        return resolveAttribute((String)getAttributes().get("url"));
     }
     
 
@@ -215,6 +220,26 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         this.beanFactory = beanFactory;
+    }
+
+    /**
+     * Set the {@code Environment} that this component runs in.
+     * @see org.springframework.context.EnvironmentAware
+     */
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
+
+    /**
+     * Get the value or resolve placeholders to find the value configured at the property file.
+     * @return value.
+     */
+    public String resolveAttribute(String value) {
+        if (StringUtils.hasText(value)) {
+            return getEnvironment().resolvePlaceholders(value);
+        }
+        return value;
     }
 
 }

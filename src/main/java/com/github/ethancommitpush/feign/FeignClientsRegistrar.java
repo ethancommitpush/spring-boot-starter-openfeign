@@ -31,7 +31,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 import java.beans.Introspector;
 import java.util.*;
@@ -110,17 +109,6 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
 
 		BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, beanName);
 		BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
-    }
-
-    /**
-     * Get the value or resolve placeholders to find the value configured at the property file.
-     * @return value.
-     */
-    private String resolve(String value) {
-        if (StringUtils.hasText(value)) {
-            return this.environment.resolvePlaceholders(value);
-        }
-        return value;
     }
 
     /**
