@@ -67,11 +67,8 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
 
     private Map<String, Object> attributes;
 
-    private final FeignClientsProperties properties;
-
-    public FeignClientsFactory(FeignClientsProperties properties) {
-        this.properties = properties;
-    }
+    @Autowired
+    private FeignClientsProperties properties;
 
     @Override
     public Object getObject() throws Exception {
