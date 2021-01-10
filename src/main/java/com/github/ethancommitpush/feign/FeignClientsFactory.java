@@ -13,20 +13,15 @@
  */
 package com.github.ethancommitpush.feign;
 
+import feign.Client;
 import feign.Feign;
 import feign.Logger;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.codec.ErrorDecoder;
-import feign.httpclient.ApacheHttpClient;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContexts;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -37,9 +32,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
-import javax.net.ssl.SSLContext;
-
-import java.security.cert.X509Certificate;
 import java.util.Map;
 
 /**
@@ -55,6 +47,9 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
     private Environment environment;
 
     private Class<T> apiType;
+
+    @Autowired
+    private Client feignClient;
 
     @Autowired
     private Encoder feignEncoder;
@@ -76,24 +71,6 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
     }
 
     /**
-     * Get a default httpClient which trust self-signed certificates.
-     * 
-     * @return default httpClient.
-     */
-    private CloseableHttpClient getHttpClient() {
-        CloseableHttpClient httpClient = null;
-        try {
-            // To trust self-signed certificates
-            TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-            SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
-            SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
-            httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
-        } catch (Exception e) {
-        }
-        return httpClient;
-    }
-
-    /**
      * Generate feign client.
      * 
      * @param apiType  class type of the interface which declared with
@@ -107,7 +84,10 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
     private T feignBuild() {
         Feign.Builder builder = Feign.builder();
         
-        builder.client(new ApacheHttpClient(getHttpClient()));
+        Client client = getFeignClient();
+        if (client != null) {
+            builder.client(client);
+        }
 
         Encoder encoder = resolveEncoder();
         if (encoder != null) {

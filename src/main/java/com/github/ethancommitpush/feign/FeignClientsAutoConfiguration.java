@@ -15,6 +15,12 @@ package com.github.ethancommitpush.feign;
 
 import com.github.ethancommitpush.feign.annotation.FeignClient;
 
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContexts;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -25,10 +31,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import feign.Client;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.codec.ErrorDecoder;
+import feign.httpclient.ApacheHttpClient;
+
 import lombok.Getter;
+
+import java.security.cert.X509Certificate;
+import javax.net.ssl.SSLContext;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -83,6 +95,30 @@ public class FeignClientsAutoConfiguration implements BeanFactoryAware {
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         this.beanFactory = beanFactory;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "feignClient")
+    public Client feignClient() {
+        System.out.println("------------------------starter feign client--------------------------->");
+        return new ApacheHttpClient(getHttpClient());
+    }
+    /**
+     * Get a default httpClient which trust self-signed certificates.
+     * 
+     * @return default httpClient.
+     */
+    private CloseableHttpClient getHttpClient() {
+        CloseableHttpClient httpClient = null;
+        try {
+            // To trust self-signed certificates
+            TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+            SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
+            SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
+            httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
+        } catch (Exception e) {
+        }
+        return httpClient;
     }
 
 }
