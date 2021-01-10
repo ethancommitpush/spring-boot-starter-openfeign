@@ -152,10 +152,6 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
     @SuppressWarnings("unchecked")
     public Encoder resolveEncoder() {
         Class<?> encoderClass = (Class<?>) getAttributes().get("encoder");
-        if (encoderClass == void.class) {
-            encoderClass = null;
-        }
-
         String encoderBeanName = (String) getAttributes().get("encoderBean");
 
         Encoder encoder = FeignConfigurationUtils.resolveEncoder(getBeanFactory(), encoderBeanName,
@@ -175,10 +171,6 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
     @SuppressWarnings("unchecked")
     public Decoder resolveDecoder() {
         Class<?> decoderClass = (Class<?>) getAttributes().get("decoder");
-        if (decoderClass == void.class) {
-            decoderClass = null;
-        }
-
         String decoderBeanName = (String) getAttributes().get("decoderBean");
 
         Decoder decoder = FeignConfigurationUtils.resolveDecoder(getBeanFactory(), decoderBeanName,
@@ -198,10 +190,6 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
     @SuppressWarnings("unchecked")
     public ErrorDecoder resolveErrorDecoder() {
         Class<?> errorDecoderClass = (Class<?>) getAttributes().get("errorDecoder");
-        if (errorDecoderClass == void.class) {
-            errorDecoderClass = null;
-        }
-
         String errorDecoderBeanName = (String) getAttributes().get("errorDecoderBean");
 
         ErrorDecoder errorDecoder = FeignConfigurationUtils.resolveErrorDecoder(getBeanFactory(), errorDecoderBeanName,

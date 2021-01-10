@@ -22,10 +22,11 @@ import feign.codec.ErrorDecoder;
 
 public class FeignConfigurationUtils {
 
+    @SuppressWarnings("unchecked")
     public static <T> T resolveOverrideableBean(Class<T> hint, BeanFactory beanFactory, String beanName,
-            Class<? extends T> beanClass) {
+            Class<?> beanClass) {
         boolean hasBeanName = !StringUtils.isEmpty(beanName);
-        boolean hasClass = (beanClass != null);
+        boolean hasClass = (beanClass != null && beanClass != void.class);
 
         if (hasBeanName && hasClass) {
             throw new IllegalArgumentException(
