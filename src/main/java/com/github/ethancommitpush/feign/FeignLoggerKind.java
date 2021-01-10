@@ -13,10 +13,23 @@
  */
 package com.github.ethancommitpush.feign;
 
+import feign.Logger;
+import feign.slf4j.Slf4jLogger;
+
 public enum FeignLoggerKind {
     
     SYSTEM_ERR,
     JUL,
     NO_OP,
     SLF4j;
+
+    public static Logger resolve(FeignLoggerKind kind, Class<?> apiType) {
+        switch(kind) {
+            case SYSTEM_ERR: return new Logger.ErrorLogger();
+            case JUL: return new Logger.JavaLogger(apiType);
+            case NO_OP: return new Logger.NoOpLogger();
+            case SLF4j: return new Slf4jLogger();
+        }
+        return null;
+    }
 }

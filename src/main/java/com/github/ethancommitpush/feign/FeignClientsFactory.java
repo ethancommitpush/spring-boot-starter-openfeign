@@ -19,7 +19,6 @@ import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.codec.ErrorDecoder;
 import feign.httpclient.ApacheHttpClient;
-import feign.slf4j.Slf4jLogger;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -120,7 +119,7 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
             builder.decoder(decoder);
         }
 
-        Logger logger = resolveLogger();
+        Logger logger = FeignLoggerKind.resolve(getProperties().getLoggerKind(), getApiType());
         if (logger != null) {
             builder.logger(logger);
         }
@@ -139,16 +138,6 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
     @Override
     public Class<?> getObjectType() {
         return this.apiType;
-    }
-
-    public Logger resolveLogger() {
-        switch(getProperties().getLoggerKind()) {
-            case SYSTEM_ERR: return new Logger.ErrorLogger();
-            case JUL: return new Logger.JavaLogger(getApiType());
-            case NO_OP: return new Logger.NoOpLogger();
-            case SLF4j: return new Slf4jLogger();
-        }
-        return null;
     }
 
     /**
