@@ -43,8 +43,6 @@ public @interface FeignClient {
      * Note: 
      * 1) exclusive with attribute 'encoderBean'
      * 2) if specified, override FeignClientsProperties.defaultEncoderClass/defaultEncoderBean
-     * 
-     * @return encoder class for the specified Feign client interface
      */
     Class<?> encoder() default void.class;
 
@@ -55,8 +53,6 @@ public @interface FeignClient {
      * Note:
      * 1) exclusive with attribute 'decoderBean'
      * 2) if specified, override FeignClientsProperties.defaultDecoderClass/defaultDecoderBean
-     * 
-     * @return decoder class for the specified Feign client interface
      */
     Class<?> decoder() default void.class;
 
@@ -67,8 +63,6 @@ public @interface FeignClient {
      * Note: 
      * 1) exclusive with attribute 'encoder'
      * 2) if specified, override FeignClientsProperties.defaultEncoderClass/defaultEncoderBean
-     * 
-     * @return encoder bean for the specified Feign client interface
      */
     String encoderBean() default "";
 
@@ -79,8 +73,6 @@ public @interface FeignClient {
      * Note:
      * 1) exclusive with attribute 'decoder'
      * 2) if specified, override FeignClientsProperties.defaultDecoderClass/defaultDecoderBean
-     * 
-     * @return decoder bean for the specified Feign client interface
      */
     String decoderBean() default "";
 
@@ -91,8 +83,6 @@ public @interface FeignClient {
      * Note:
      * 1) exclusive with attribute 'errorDecoder'
      * 2) if specified, override FeignClientsProperties.defaultErrorDecoderClass/defaultErrorDecoderBean
-     * 
-     * @return error decoder bean for the specified Feign client interface
      */
     String errorDecoderBean() default "";
 
@@ -103,8 +93,6 @@ public @interface FeignClient {
      * Note:
      * 1) exclusive with attribute 'errorDecoderBean'
      * 2) if specified, override FeignClientsProperties.defaultErrorDecoderClass/defaultErrorDecoderBean
-     * 
-     * @return error decoder class for the specified Feign client interface
      */
     Class<?> errorDecoder() default void.class;
 
@@ -115,8 +103,6 @@ public @interface FeignClient {
      * Note:
      * 1) exclusive with attribute 'clientBean'
      * 2) if specified, override FeignClientsProperties.defaultClientClass/defaultClientBean
-     * 
-     * @return client class for the specified Feign client interface
      */
     Class<?> client() default void.class;
 
@@ -127,8 +113,6 @@ public @interface FeignClient {
      * Note: 
      * 1) exclusive with attribute 'client'
      * 2) if specified, override FeignClientsProperties.defaultClientClass/defaulClientBean
-     * 
-     * @return client bean for the specified Feign client interface
      */
     String clientBean() default "";
 

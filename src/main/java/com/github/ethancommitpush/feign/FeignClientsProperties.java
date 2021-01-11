@@ -45,8 +45,6 @@ public class FeignClientsProperties {
      * Note:
      * 1) exclusive with property 'defaultDecoderBean'
      * 2) override-able by FeignClient.decoder/decoderBean
-     * 
-     * @return decoder class
      */
     private Class<? extends Decoder> defaultDecoderClass = JacksonDecoder.class;
 
@@ -57,8 +55,6 @@ public class FeignClientsProperties {
      * Note: 
      * 1) exclusive with property 'defaultEncoderBean'
      * 2) override-able by FeignClient.encoder/encoderBean
-     * 
-     * @return encoder class
      */
     private Class<? extends Encoder> defaultEncoderClass = JacksonEncoder.class;
     
@@ -67,10 +63,8 @@ public class FeignClientsProperties {
      * The encoder bean class must implement the class feign.codec.Encoder.
      * 
      * Note: 
-     * 1) exclusive with property 'defaultEncoderBean'
+     * 1) exclusive with property 'defaultEncoder'
      * 2) override-able by FeignClient.encoder/encoderBean
-     * 
-     * @return encoder bean name
      */
     private String defaultEncoderBean;
 
@@ -79,10 +73,8 @@ public class FeignClientsProperties {
      * The decoder bean class must implement the class feign.codec.Decoder.
      * 
      * Note:
-     * 1) exclusive with property 'defaultDecoderBean'
+     * 1) exclusive with property 'defaultDecoder'
      * 2) override-able by FeignClient.decoder/decoderBean
-     * 
-     * @return decoder bean name
      */
     private String defaultDecoderBean;
 
@@ -91,10 +83,8 @@ public class FeignClientsProperties {
      * The error decoder bean class must implement the class feign.codec.ErrorDecoder.
      * 
      * Note:
-     * 1) exclusive with property 'defaultErorrDecoderBean'
+     * 1) exclusive with property 'defaultErorrDecoder'
      * 2) override-able by FeignClient.errorDecoder/errorDecoderBean
-     * 
-     * @return error decoder bean name
      */
     private String defaultErrorDecoderBean;
     
@@ -103,10 +93,8 @@ public class FeignClientsProperties {
      * The error decoder class must implement the class feign.codec.ErrorDecoder.
      * 
      * Note:
-     * 1) exclusive with property 'defaultErrorDecoderBean'
+     * 1) exclusive with property 'defaultErrorDecoder'
      * 2) override-able by FeignClient.errorDecoder/errorDecoderBean
-     * 
-     * @return decoder class
      */
     private Class<? extends ErrorDecoder> defaultErrorDecoderClass = CustomErrorDecoder.class;
 
@@ -117,8 +105,6 @@ public class FeignClientsProperties {
      * Note: 
      * 1) exclusive with property 'defaultClientBean'
      * 2) override-able by FeignClient.client/clientBean
-     * 
-     * @return client class
      */
     private Class<Client> defaultClientClass;
     
@@ -129,8 +115,6 @@ public class FeignClientsProperties {
      * Note: 
      * 1) exclusive with property 'defaultClientBean'
      * 2) override-able by FeignClient.client/clientBean
-     * 
-     * @return client bean name
      */
     private String defaultClientBean;
 
