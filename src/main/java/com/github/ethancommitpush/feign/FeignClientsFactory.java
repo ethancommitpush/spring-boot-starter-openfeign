@@ -16,6 +16,7 @@ package com.github.ethancommitpush.feign;
 import feign.Client;
 import feign.Feign;
 import feign.Logger;
+import feign.slf4j.Slf4jLogger;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.codec.ErrorDecoder;
@@ -35,7 +36,7 @@ import org.springframework.core.env.Environment;
 import java.util.Map;
 
 /**
- * 
+ *
  */
 @Getter
 @Setter
@@ -72,7 +73,7 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
 
     /**
      * Generate feign client.
-     * 
+     *
      * @param apiType  class type of the interface which declared with
      *                 &#64;FeignClient.
      * @param url      url from the attributes of the &#64;FeignClient annotation.
@@ -83,7 +84,7 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
      */
     private T feignBuild() {
         Feign.Builder builder = Feign.builder();
-        
+
         Client client = resolveClient();
         if (client != null) {
             builder.client(client);
@@ -99,7 +100,7 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
             builder.decoder(decoder);
         }
 
-        Logger logger = FeignLoggerKind.resolve(getProperties().getLoggerKind(), getApiType());
+        Logger logger = resolveLogger();
         if (logger != null) {
             builder.logger(logger);
         }
@@ -114,10 +115,20 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
         return builder.target(getApiType(), getUrl());
     }
 
+    public Logger resolveLogger() {
+        switch(getProperties().getLoggerType()) {
+            case SYSTEM_ERR: return new Logger.ErrorLogger();
+            case JUL: return new Logger.JavaLogger(getApiType());
+            case NO_OP: return new Logger.NoOpLogger();
+            case SLF4j: return new Slf4jLogger(getApiType());
+        }
+        return null;
+    }
+
     public String getUrl() {
         return resolveAttribute((String)getAttributes().get("url"));
     }
-    
+
 
     @Override
     public Class<?> getObjectType() {
@@ -126,7 +137,7 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
 
     /**
      * Resolves the http client from either &#64;FeignClient annotation or default properties
-     * 
+     *
      * @return client
      */
     @SuppressWarnings("unchecked")
@@ -145,7 +156,7 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
 
     /**
      * Resolves the encoder from either &#64;FeignClient annotation or default properties
-     * 
+     *
      * @return encoder
      */
     @SuppressWarnings("unchecked")
@@ -164,7 +175,7 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
 
     /**
      * Resolves the decoder from either &#64;FeignClient annotation or default properties
-     * 
+     *
      * @return decoder
      */
     @SuppressWarnings("unchecked")
@@ -183,7 +194,7 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
 
     /**
      * Resolves the error decoder from either &#64;FeignClient annotation or default properties
-     * 
+     *
      * @return error decoder
      */
     @SuppressWarnings("unchecked")

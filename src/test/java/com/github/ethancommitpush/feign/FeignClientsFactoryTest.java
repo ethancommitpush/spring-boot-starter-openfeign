@@ -78,7 +78,7 @@ public class FeignClientsFactoryTest {
         this.attributes = new HashMap<String, Object>();
         this.target.setAttributes(this.attributes);
 
-        this.properties.setLoggerKind(FeignLoggerKind.NO_OP);
+        this.properties.setLoggerType(FeignLoggerType.NO_OP);
         this.target.setProperties(this.properties);
     }
 
@@ -90,7 +90,7 @@ public class FeignClientsFactoryTest {
         when(this.environment.resolvePlaceholders("http://test")).thenReturn("http://test");
 
         // TODO: verify how codec/client is invoked
-        
+
         Object actual = this.target.getObject();
         Assert.assertNotNull(actual);
         Assert.assertTrue(actual instanceof TargetInterface);
@@ -238,7 +238,7 @@ public class FeignClientsFactoryTest {
     }
 
     @Test
-    public void test_resolveClient_withAttribute_class() {        
+    public void test_resolveClient_withAttribute_class() {
         this.attributes.put("client", MyClient.class);
 
         Client actual = this.target.resolveClient();
