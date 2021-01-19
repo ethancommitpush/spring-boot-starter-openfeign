@@ -39,80 +39,64 @@ public @interface FeignClient {
     /**
      * Encoder class for the specified Feign client interface, to encode parameters
      * in certain way. The encoder class must implement the class feign.codec.Encoder.
-     * 
-     * Note: 
-     * 1) exclusive with attribute 'encoderBean'
-     * 2) if specified, override FeignClientsProperties.defaultEncoderClass/defaultEncoderBean
+     *
+     * Exclusive with attribute 'encoderBean'
      */
     Class<?> encoder() default void.class;
 
     /**
      * Decoder class for the specified Feign client interface, to decode parameters
      * in certain way. The decoder class must implement the class feign.codec.Decoder.
-     * 
-     * Note:
-     * 1) exclusive with attribute 'decoderBean'
-     * 2) if specified, override FeignClientsProperties.defaultDecoderClass/defaultDecoderBean
+     *
+     * Exclusive with attribute 'decoderBean'
      */
     Class<?> decoder() default void.class;
 
     /**
      * Encoder bean name for the specified Feign client interface, to encode parameters
      * in certain way. The encoder bean class must implement the class feign.codec.Encoder.
-     * 
-     * Note: 
-     * 1) exclusive with attribute 'encoder'
-     * 2) if specified, override FeignClientsProperties.defaultEncoderClass/defaultEncoderBean
+     *
+     * Exclusive with attribute 'encoder'
      */
     String encoderBean() default "";
 
     /**
      * Decoder bean name for the specified Feign client interface, to decode parameters
      * in certain way. The decoder bean class must implement the class feign.codec.Decoder.
-     * 
-     * Note:
-     * 1) exclusive with attribute 'decoder'
-     * 2) if specified, override FeignClientsProperties.defaultDecoderClass/defaultDecoderBean
+     *
+     * Exclusive with attribute 'decoder'
      */
     String decoderBean() default "";
 
     /**
      * Error decoder bean name for the specified Feign client interface, to decode error
      * in certain way. The error decoder bean class must implement the class feign.codec.ErrorDecoder.
-     * 
-     * Note:
-     * 1) exclusive with attribute 'errorDecoder'
-     * 2) if specified, override FeignClientsProperties.defaultErrorDecoderClass/defaultErrorDecoderBean
+     *
+     * Exclusive with attribute 'errorDecoder'
      */
     String errorDecoderBean() default "";
 
     /**
      * Error decoder class for the specified Feign client interface, to decode error
      * in certain way. The error decoder class must implement the class feign.codec.ErrorDecoder.
-     * 
-     * Note:
-     * 1) exclusive with attribute 'errorDecoderBean'
-     * 2) if specified, override FeignClientsProperties.defaultErrorDecoderClass/defaultErrorDecoderBean
+     *
+     * Exclusive with attribute 'errorDecoderBean'
      */
     Class<?> errorDecoder() default void.class;
 
     /**
-     * http client class for the specified Feign client interface. 
+     * http client class for the specified Feign client interface.
      * The client class must implement the class feign.Client.
-     * 
-     * Note:
-     * 1) exclusive with attribute 'clientBean'
-     * 2) if specified, override FeignClientsProperties.defaultClientClass/defaultClientBean
+     *
+     * Exclusive with attribute 'clientBean'
      */
     Class<?> client() default void.class;
 
     /**
-     * http client bean name for the specified Feign client interface. 
+     * http client bean name for the specified Feign client interface.
      * The client bean class must implement the class feign.Client.
-     * 
-     * Note: 
-     * 1) exclusive with attribute 'client'
-     * 2) if specified, override FeignClientsProperties.defaultClientClass/defaulClientBean
+     *
+     * Exclusive with attribute 'client'
      */
     String clientBean() default "";
 

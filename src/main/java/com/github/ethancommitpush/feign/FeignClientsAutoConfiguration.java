@@ -14,6 +14,7 @@
 package com.github.ethancommitpush.feign;
 
 import com.github.ethancommitpush.feign.annotation.FeignClient;
+import com.github.ethancommitpush.feign.decoder.CustomErrorDecoder;
 
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
@@ -36,6 +37,8 @@ import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.codec.ErrorDecoder;
 import feign.httpclient.ApacheHttpClient;
+import feign.jackson.JacksonDecoder;
+import feign.jackson.JacksonEncoder;
 
 import lombok.Getter;
 
@@ -64,28 +67,19 @@ public class FeignClientsAutoConfiguration implements BeanFactoryAware {
     @Bean
     @ConditionalOnMissingBean(name = "feignErrorDecoder")
     public ErrorDecoder feignErrorDecoder() {
-        return FeignConfigurationUtils.resolveErrorDecoder(
-            getBeanFactory(), 
-            getProperties().getDefaultErrorDecoderBean(), 
-            getProperties().getDefaultErrorDecoderClass());
+        return new CustomErrorDecoder();
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "feignDecoder")
-    public Decoder feignDecoder() {        
-        return FeignConfigurationUtils.resolveDecoder(
-            getBeanFactory(), 
-            getProperties().getDefaultDecoderBean(), 
-            getProperties().getDefaultDecoderClass());
+    public Decoder feignDecoder() {
+        return new JacksonDecoder();
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "feignEncoder")
     public Encoder feignEncoder() {
-        return FeignConfigurationUtils.resolveEncoder(
-            getBeanFactory(), 
-            getProperties().getDefaultEncoderBean(), 
-            getProperties().getDefaultEncoderClass());
+        return new JacksonEncoder();
     }
 
     @Override
@@ -100,7 +94,7 @@ public class FeignClientsAutoConfiguration implements BeanFactoryAware {
     }
     /**
      * Get a default httpClient which trust self-signed certificates.
-     * 
+     *
      * @return default httpClient.
      */
     private CloseableHttpClient getHttpClient() {

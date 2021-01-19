@@ -13,17 +13,10 @@
  */
 package com.github.ethancommitpush.feign;
 
-import com.github.ethancommitpush.feign.decoder.CustomErrorDecoder;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import feign.Client;
 import feign.Logger;
-import feign.codec.Decoder;
-import feign.codec.Encoder;
-import feign.codec.ErrorDecoder;
-import feign.jackson.JacksonDecoder;
-import feign.jackson.JacksonEncoder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -37,85 +30,5 @@ public class FeignClientsProperties {
     private Logger.Level logLevel = Logger.Level.BASIC;
 
     private FeignLoggerType loggerType = FeignLoggerType.SYSTEM_ERR;
-
-    /**
-     * Default decoder class.
-     * The decoder class must implement the class feign.codec.Decoder.
-     *
-     * Note:
-     * 1) exclusive with property 'defaultDecoderBean'
-     * 2) override-able by FeignClient.decoder/decoderBean
-     */
-    private Class<? extends Decoder> defaultDecoderClass = JacksonDecoder.class;
-
-    /**
-     * Default encoder class.
-     * The encoder class must implement the class feign.codec.Encoder.
-     *
-     * Note:
-     * 1) exclusive with property 'defaultEncoderBean'
-     * 2) override-able by FeignClient.encoder/encoderBean
-     */
-    private Class<? extends Encoder> defaultEncoderClass = JacksonEncoder.class;
-
-    /**
-     * Default encoder bean name.
-     * The encoder bean class must implement the class feign.codec.Encoder.
-     *
-     * Note:
-     * 1) exclusive with property 'defaultEncoder'
-     * 2) override-able by FeignClient.encoder/encoderBean
-     */
-    private String defaultEncoderBean;
-
-    /**
-     * Default decoder bean name.
-     * The decoder bean class must implement the class feign.codec.Decoder.
-     *
-     * Note:
-     * 1) exclusive with property 'defaultDecoder'
-     * 2) override-able by FeignClient.decoder/decoderBean
-     */
-    private String defaultDecoderBean;
-
-    /**
-     * Default error decoder bean name.
-     * The error decoder bean class must implement the class feign.codec.ErrorDecoder.
-     *
-     * Note:
-     * 1) exclusive with property 'defaultErorrDecoder'
-     * 2) override-able by FeignClient.errorDecoder/errorDecoderBean
-     */
-    private String defaultErrorDecoderBean;
-
-    /**
-     * Default error decoder class.
-     * The error decoder class must implement the class feign.codec.ErrorDecoder.
-     *
-     * Note:
-     * 1) exclusive with property 'defaultErrorDecoder'
-     * 2) override-able by FeignClient.errorDecoder/errorDecoderBean
-     */
-    private Class<? extends ErrorDecoder> defaultErrorDecoderClass = CustomErrorDecoder.class;
-
-    /**
-     * Default http client class.
-     * The client class must implement the class feign.Client.
-     *
-     * Note:
-     * 1) exclusive with property 'defaultClientBean'
-     * 2) override-able by FeignClient.client/clientBean
-     */
-    private Class<Client> defaultClientClass;
-
-    /**
-     * Default client bean name.
-     * The cilent bean class must implement the class feign.Client.
-     *
-     * Note:
-     * 1) exclusive with property 'defaultClientBean'
-     * 2) override-able by FeignClient.client/clientBean
-     */
-    private String defaultClientBean;
 
 }
