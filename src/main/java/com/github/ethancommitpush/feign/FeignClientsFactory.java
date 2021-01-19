@@ -16,12 +16,14 @@ package com.github.ethancommitpush.feign;
 import feign.Client;
 import feign.Feign;
 import feign.Logger;
+import feign.Logger.Level;
 import feign.slf4j.Slf4jLogger;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.codec.ErrorDecoder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -40,6 +42,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
+@Slf4j
 @EnableConfigurationProperties(FeignClientsProperties.class)
 public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryAware, EnvironmentAware {
 
@@ -68,7 +71,9 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
 
     @Override
     public Object getObject() throws Exception {
-        return feignBuild();
+        Object r = feignBuild();
+        log.debug("{} feign client: instance is {}, url is {}", getApiType(), r, getUrl());
+        return r;
     }
 
     /**
@@ -86,28 +91,35 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
         Feign.Builder builder = Feign.builder();
 
         Client client = resolveClient();
+        log.debug("{} feign client {}: http client is {}", getApiType(), client);
         if (client != null) {
             builder.client(client);
         }
 
         Encoder encoder = resolveEncoder();
+        log.debug("{} feign client {}: encoder is {}", getApiType(), encoder);
         if (encoder != null) {
             builder.encoder(encoder);
         }
 
         Decoder decoder = resolveDecoder();
+        log.debug("{} feign client {}: decoder is {}", getApiType(), decoder);
         if (decoder != null) {
             builder.decoder(decoder);
         }
 
         Logger logger = resolveLogger();
+        log.debug("{} feign client {}: logger is {}", getApiType(), logger);
         if (logger != null) {
             builder.logger(logger);
         }
 
-        builder.logLevel(getProperties().getLogLevel());
+        Level logLevel = getProperties().getLogLevel();
+        log.debug("{} feign client {}: logger level is {}", getApiType(), logLevel);
+        builder.logLevel(logLevel);
 
         ErrorDecoder errorDecoder = resolveErrorDecoder();
+        log.debug("{} feign client {}: error decoder is {}", getApiType(), errorDecoder);
         if (errorDecoder != null) {
             builder.errorDecoder(errorDecoder);
         }
