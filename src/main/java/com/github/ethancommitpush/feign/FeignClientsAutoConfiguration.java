@@ -14,9 +14,36 @@
 package com.github.ethancommitpush.feign;
 
 import com.github.ethancommitpush.feign.annotation.FeignClient;
+import com.github.ethancommitpush.feign.decoder.CustomErrorDecoder;
+
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContexts;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+
+import feign.Client;
+import feign.codec.Decoder;
+import feign.codec.Encoder;
+import feign.codec.ErrorDecoder;
+import feign.httpclient.ApacheHttpClient;
+import feign.jackson.JacksonDecoder;
+import feign.jackson.JacksonEncoder;
+
+import lombok.Getter;
+
+import java.security.cert.X509Certificate;
+import javax.net.ssl.SSLContext;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -25,5 +52,62 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ FeignClient.class })
 @Import(FeignClientsRegistrar.class)
-public class FeignClientsAutoConfiguration {
+@EnableConfigurationProperties(FeignClientsProperties.class)
+@Getter
+public class FeignClientsAutoConfiguration implements BeanFactoryAware {
+
+    private BeanFactory beanFactory;
+
+    private final FeignClientsProperties properties;
+
+    public FeignClientsAutoConfiguration(FeignClientsProperties properties) {
+        this.properties = properties;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "feignErrorDecoder")
+    public ErrorDecoder feignErrorDecoder() {
+        return new CustomErrorDecoder();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "feignDecoder")
+    public Decoder feignDecoder() {
+        return new JacksonDecoder();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "feignEncoder")
+    public Encoder feignEncoder() {
+        return new JacksonEncoder();
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "feignClient")
+    public Client feignClient() {
+        return new ApacheHttpClient(getHttpClient());
+    }
+    /**
+     * Get a default httpClient which trust self-signed certificates.
+     *
+     * @return default httpClient.
+     */
+    private CloseableHttpClient getHttpClient() {
+        CloseableHttpClient httpClient = null;
+        try {
+            // To trust self-signed certificates
+            TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+            SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
+            SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
+            httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
+        } catch (Exception e) {
+        }
+        return httpClient;
+    }
+
 }
