@@ -40,8 +40,6 @@ import feign.httpclient.ApacheHttpClient;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 
-import lombok.Getter;
-
 import java.security.cert.X509Certificate;
 import javax.net.ssl.SSLContext;
 
@@ -53,7 +51,6 @@ import javax.net.ssl.SSLContext;
 @ConditionalOnClass({ FeignClient.class })
 @Import(FeignClientsRegistrar.class)
 @EnableConfigurationProperties(FeignClientsProperties.class)
-@Getter
 public class FeignClientsAutoConfiguration implements BeanFactoryAware {
 
     private BeanFactory beanFactory;

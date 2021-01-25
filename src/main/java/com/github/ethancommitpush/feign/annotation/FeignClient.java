@@ -37,67 +37,27 @@ public @interface FeignClient {
     String url();
 
     /**
-     * Encoder class for the specified Feign client interface, to encode parameters
-     * in certain way. The encoder class must implement the class feign.codec.Encoder.
-     *
-     * Exclusive with attribute 'encoderBean'
-     */
-    Class<?> encoder() default void.class;
-
-    /**
-     * Decoder class for the specified Feign client interface, to decode parameters
-     * in certain way. The decoder class must implement the class feign.codec.Decoder.
-     *
-     * Exclusive with attribute 'decoderBean'
-     */
-    Class<?> decoder() default void.class;
-
-    /**
      * Encoder bean name for the specified Feign client interface, to encode parameters
      * in certain way. The encoder bean class must implement the class feign.codec.Encoder.
-     *
-     * Exclusive with attribute 'encoder'
      */
-    String encoderBean() default "";
+    String encoder() default "";
 
     /**
      * Decoder bean name for the specified Feign client interface, to decode parameters
      * in certain way. The decoder bean class must implement the class feign.codec.Decoder.
-     *
-     * Exclusive with attribute 'decoder'
      */
-    String decoderBean() default "";
+    String decoder() default "";
 
     /**
      * Error decoder bean name for the specified Feign client interface, to decode error
      * in certain way. The error decoder bean class must implement the class feign.codec.ErrorDecoder.
-     *
-     * Exclusive with attribute 'errorDecoder'
      */
-    String errorDecoderBean() default "";
-
-    /**
-     * Error decoder class for the specified Feign client interface, to decode error
-     * in certain way. The error decoder class must implement the class feign.codec.ErrorDecoder.
-     *
-     * Exclusive with attribute 'errorDecoderBean'
-     */
-    Class<?> errorDecoder() default void.class;
-
-    /**
-     * http client class for the specified Feign client interface.
-     * The client class must implement the class feign.Client.
-     *
-     * Exclusive with attribute 'clientBean'
-     */
-    Class<?> client() default void.class;
+    String errorDecoder() default "";
 
     /**
      * http client bean name for the specified Feign client interface.
      * The client bean class must implement the class feign.Client.
-     *
-     * Exclusive with attribute 'client'
      */
-    String clientBean() default "";
+    String client() default "";
 
 }

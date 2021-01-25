@@ -13,22 +13,29 @@
  */
 package com.github.ethancommitpush.feign;
 
-
+import feign.Logger;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import feign.Logger;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
 @ConfigurationProperties("feign")
-@Setter
-@Getter
-@ToString
 public class FeignClientsProperties {
 
     private Logger.Level logLevel = Logger.Level.BASIC;
-
     private FeignLoggerType loggerType = FeignLoggerType.SYSTEM_ERR;
+
+    public Logger.Level getLogLevel() {
+        return logLevel;
+    }
+
+    public void setLogLevel(Logger.Level logLevel) {
+        this.logLevel = logLevel;
+    }
+
+    public FeignLoggerType getLoggerType() {
+        return loggerType;
+    }
+
+    public void setLoggerType(FeignLoggerType loggerType) {
+        this.loggerType = loggerType;
+    }
 
 }

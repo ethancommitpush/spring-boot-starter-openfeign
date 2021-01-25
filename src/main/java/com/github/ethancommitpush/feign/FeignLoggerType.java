@@ -18,5 +18,5 @@ public enum FeignLoggerType {
     SYSTEM_ERR,
     JUL,
     NO_OP,
-    SLF4j;
+    SLF4J;
 }

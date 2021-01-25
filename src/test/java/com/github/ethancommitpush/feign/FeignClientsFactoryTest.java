@@ -124,19 +124,11 @@ public class FeignClientsFactoryTest {
     public void test_resolveEncoder_withAttribute_bean() {
         Encoder expected = new MyEncoder();
 
-        this.attributes.put("encoderBean", "myEncoderBean");
+        this.attributes.put("encoder", "myEncoderBean");
         when(this.beanFactory.getBean("myEncoderBean", Encoder.class)).thenReturn(expected);
 
         Encoder actual = this.target.resolveEncoder();
         Assert.assertSame(expected, actual);
-    }
-
-    @Test
-    public void test_resolveEncoder_withAttribute_class() {
-        this.attributes.put("encoder", MyEncoder.class);
-
-        Encoder actual = this.target.resolveEncoder();
-        Assert.assertTrue(actual.getClass() == MyEncoder.class);
     }
 
     static class MyDecoder implements Decoder {
@@ -157,19 +149,11 @@ public class FeignClientsFactoryTest {
     public void test_resolveDecoder_withAttribute_bean() {
         Decoder expected = new MyDecoder();
 
-        this.attributes.put("decoderBean", "myDecoderBean");
+        this.attributes.put("decoder", "myDecoderBean");
         when(this.beanFactory.getBean("myDecoderBean", Decoder.class)).thenReturn(expected);
 
         Decoder actual = this.target.resolveDecoder();
         Assert.assertSame(expected, actual);
-    }
-
-    @Test
-    public void test_resolveDecoder_withAttribute_class() {
-        this.attributes.put("decoder", MyDecoder.class);
-
-        Decoder actual = this.target.resolveDecoder();
-        Assert.assertTrue(actual.getClass() == MyDecoder.class);
     }
 
     static class MyErrorDecoder extends CustomErrorDecoder {
@@ -185,19 +169,11 @@ public class FeignClientsFactoryTest {
     public void test_resolveErrorDecoder_withAttribute_bean() {
         ErrorDecoder expected = new CustomErrorDecoder();
 
-        this.attributes.put("errorDecoderBean", "myErrorDecoderBean");
+        this.attributes.put("errorDecoder", "myErrorDecoderBean");
         when(this.beanFactory.getBean("myErrorDecoderBean", ErrorDecoder.class)).thenReturn(expected);
 
         ErrorDecoder actual = this.target.resolveErrorDecoder();
         Assert.assertSame(expected, actual);
-    }
-
-    @Test
-    public void test_resolveErrorDecoder_withAttribute_class() {
-        this.attributes.put("errorDecoder", MyErrorDecoder.class);
-
-        ErrorDecoder actual = this.target.resolveErrorDecoder();
-        Assert.assertTrue(actual.getClass() == MyErrorDecoder.class);
     }
 
     @Test
@@ -230,19 +206,11 @@ public class FeignClientsFactoryTest {
     public void test_resolveClient_withAttribute_bean() {
         Client expected = new MyClient();
 
-        this.attributes.put("clientBean", "myClientBean");
+        this.attributes.put("client", "myClientBean");
         when(this.beanFactory.getBean("myClientBean", Client.class)).thenReturn(expected);
 
         Client actual = this.target.resolveClient();
         Assert.assertSame(expected, actual);
-    }
-
-    @Test
-    public void test_resolveClient_withAttribute_class() {
-        this.attributes.put("client", MyClient.class);
-
-        Client actual = this.target.resolveClient();
-        Assert.assertTrue(actual.getClass() == MyClient.class);
     }
 
 }

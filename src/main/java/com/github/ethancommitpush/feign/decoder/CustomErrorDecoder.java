@@ -16,13 +16,15 @@ package com.github.ethancommitpush.feign.decoder;
 import feign.Request;
 import feign.Response;
 import feign.codec.ErrorDecoder;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A custom errorDecoder to log exceptions.
  */
-@Slf4j
 public class CustomErrorDecoder implements ErrorDecoder {
+    private static final Logger log = LoggerFactory.getLogger(CustomErrorDecoder.class);
+
     private final ErrorDecoder errorDecoder = new Default();
 
     /**

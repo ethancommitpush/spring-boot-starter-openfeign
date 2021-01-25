@@ -15,42 +15,35 @@ package com.github.ethancommitpush.feign;
 
 import feign.Client;
 import feign.Feign;
-import feign.Logger;
 import feign.Logger.Level;
 import feign.slf4j.Slf4jLogger;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.codec.ErrorDecoder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.util.StringUtils;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
 import java.util.Map;
 
-/**
- *
- */
-@Getter
-@Setter
-@Slf4j
-@EnableConfigurationProperties(FeignClientsProperties.class)
 public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryAware, EnvironmentAware {
+    private static final Logger log = LoggerFactory.getLogger(FeignClientsFactory.class);
 
     private BeanFactory beanFactory;
 
     private Environment environment;
 
     private Class<T> apiType;
+
+    private Map<String, Object> attributes;
 
     @Autowired
     private Client feignClient;
@@ -64,81 +57,73 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
     @Autowired
     private ErrorDecoder feignErrorDecoder;
 
-    private Map<String, Object> attributes;
-
     @Autowired
     private FeignClientsProperties properties;
 
     @Override
     public Object getObject() throws Exception {
         Object r = feignBuild();
-        log.debug("{} feign client: instance is {}, url is {}", getApiType(), r, getUrl());
+        log.debug("{} feign client: instance is {}, url is {}", apiType, r, getUrl());
         return r;
     }
 
     /**
      * Generate feign client.
      *
-     * @param apiType  class type of the interface which declared with
-     *                 &#64;FeignClient.
-     * @param url      url from the attributes of the &#64;FeignClient annotation.
-     * @param encoder  encoder from the attributes of the &#64;FeignClient
-     *                 annotation.
-     * @param logLevel log level.
      * @return generated feign client.
      */
     private T feignBuild() {
         Feign.Builder builder = Feign.builder();
 
         Client client = resolveClient();
-        log.debug("{} feign client {}: http client is {}", getApiType(), client);
+        log.debug("{} feign client {}: http client is {}", apiType, client);
         if (client != null) {
             builder.client(client);
         }
 
         Encoder encoder = resolveEncoder();
-        log.debug("{} feign client {}: encoder is {}", getApiType(), encoder);
+        log.debug("{} feign client {}: encoder is {}", apiType, encoder);
         if (encoder != null) {
             builder.encoder(encoder);
         }
 
         Decoder decoder = resolveDecoder();
-        log.debug("{} feign client {}: decoder is {}", getApiType(), decoder);
+        log.debug("{} feign client {}: decoder is {}", apiType, decoder);
         if (decoder != null) {
             builder.decoder(decoder);
         }
 
-        Logger logger = resolveLogger();
-        log.debug("{} feign client {}: logger is {}", getApiType(), logger);
+        feign.Logger logger = resolveLogger();
+        log.debug("{} feign client {}: logger is {}", apiType, logger);
         if (logger != null) {
             builder.logger(logger);
         }
 
-        Level logLevel = getProperties().getLogLevel();
-        log.debug("{} feign client {}: logger level is {}", getApiType(), logLevel);
+        Level logLevel = properties.getLogLevel();
+        log.debug("{} feign client {}: logger level is {}", apiType, logLevel);
         builder.logLevel(logLevel);
 
         ErrorDecoder errorDecoder = resolveErrorDecoder();
-        log.debug("{} feign client {}: error decoder is {}", getApiType(), errorDecoder);
+        log.debug("{} feign client {}: error decoder is {}", apiType, errorDecoder);
         if (errorDecoder != null) {
             builder.errorDecoder(errorDecoder);
         }
 
-        return builder.target(getApiType(), getUrl());
+        return builder.target(apiType, getUrl());
     }
 
-    public Logger resolveLogger() {
-        switch(getProperties().getLoggerType()) {
-            case SYSTEM_ERR: return new Logger.ErrorLogger();
-            case JUL: return new Logger.JavaLogger(getApiType());
-            case NO_OP: return new Logger.NoOpLogger();
-            case SLF4j: return new Slf4jLogger(getApiType());
+    public feign.Logger resolveLogger() {
+        switch(properties.getLoggerType()) {
+            case SYSTEM_ERR: return new feign.Logger.ErrorLogger();
+            case JUL: return new feign.Logger.JavaLogger(apiType);
+            case NO_OP: return new feign.Logger.NoOpLogger();
+            case SLF4J: return new Slf4jLogger(apiType);
         }
         return null;
     }
 
     public String getUrl() {
-        return resolveAttribute((String)getAttributes().get("url"));
+        return resolveAttribute((String) attributes.get("url"));
     }
 
 
@@ -154,16 +139,16 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
      */
     @SuppressWarnings("unchecked")
     public Client resolveClient() {
-        Class<?> clientClass = (Class<?>) getAttributes().get("client");
-        String clientBeanName = (String) getAttributes().get("clientBean");
+        Class<?> clientClass = (Class<?>) attributes.get("clientClass");
+        String clientBeanName = (String) attributes.get("client");
 
-        Client client = FeignConfigurationUtils.resolveClient(getBeanFactory(), clientBeanName,
+        Client client = FeignConfigurationUtils.resolveClient(beanFactory, clientBeanName,
                 (Class<? extends Client>) clientClass);
         if (client != null) {
             return client;
         }
 
-        return getFeignClient();
+        return feignClient;
     }
 
     /**
@@ -173,16 +158,16 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
      */
     @SuppressWarnings("unchecked")
     public Encoder resolveEncoder() {
-        Class<?> encoderClass = (Class<?>) getAttributes().get("encoder");
-        String encoderBeanName = (String) getAttributes().get("encoderBean");
+        Class<?> encoderClass = (Class<?>) attributes.get("encoderClass");
+        String encoderBeanName = (String) attributes.get("encoder");
 
-        Encoder encoder = FeignConfigurationUtils.resolveEncoder(getBeanFactory(), encoderBeanName,
+        Encoder encoder = FeignConfigurationUtils.resolveEncoder(beanFactory, encoderBeanName,
                 (Class<? extends Encoder>) encoderClass);
         if (encoder != null) {
             return encoder;
         }
 
-        return getFeignEncoder();
+        return feignEncoder;
     }
 
     /**
@@ -192,16 +177,16 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
      */
     @SuppressWarnings("unchecked")
     public Decoder resolveDecoder() {
-        Class<?> decoderClass = (Class<?>) getAttributes().get("decoder");
-        String decoderBeanName = (String) getAttributes().get("decoderBean");
+        Class<?> decoderClass = (Class<?>) attributes.get("decoderClass");
+        String decoderBeanName = (String) attributes.get("decoder");
 
-        Decoder decoder = FeignConfigurationUtils.resolveDecoder(getBeanFactory(), decoderBeanName,
+        Decoder decoder = FeignConfigurationUtils.resolveDecoder(beanFactory, decoderBeanName,
                 (Class<? extends Decoder>) decoderClass);
         if (decoder != null) {
             return decoder;
         }
 
-        return getFeignDecoder();
+        return feignDecoder;
     }
 
     /**
@@ -211,18 +196,28 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
      */
     @SuppressWarnings("unchecked")
     public ErrorDecoder resolveErrorDecoder() {
-        Class<?> errorDecoderClass = (Class<?>) getAttributes().get("errorDecoder");
-        String errorDecoderBeanName = (String) getAttributes().get("errorDecoderBean");
+        Class<?> errorDecoderClass = (Class<?>) attributes.get("errorDecoderClass");
+        String errorDecoderBeanName = (String) attributes.get("errorDecoder");
 
-        ErrorDecoder errorDecoder = FeignConfigurationUtils.resolveErrorDecoder(getBeanFactory(), errorDecoderBeanName,
+        ErrorDecoder errorDecoder = FeignConfigurationUtils.resolveErrorDecoder(beanFactory, errorDecoderBeanName,
                 (Class<? extends ErrorDecoder>) errorDecoderClass);
         if (errorDecoder != null) {
             return errorDecoder;
         }
 
-        return getFeignErrorDecoder();
+        return feignErrorDecoder;
     }
 
+    /**
+     * Get the value or resolve placeholders to find the value configured at the property file.
+     * @return value.
+     */
+    public String resolveAttribute(String value) {
+        if (StringUtils.hasText(value)) {
+            return environment.resolvePlaceholders(value);
+        }
+        return value;
+    }
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -238,15 +233,24 @@ public class FeignClientsFactory<T> implements FactoryBean<Object>, BeanFactoryA
         this.environment = environment;
     }
 
-    /**
-     * Get the value or resolve placeholders to find the value configured at the property file.
-     * @return value.
-     */
-    public String resolveAttribute(String value) {
-        if (StringUtils.hasText(value)) {
-            return getEnvironment().resolvePlaceholders(value);
-        }
-        return value;
+    public Class<T> getApiType() {
+        return apiType;
+    }
+
+    public void setApiType(Class<T> apiType) {
+        this.apiType = apiType;
+    }
+
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Map<String, Object> attributes) {
+        this.attributes = attributes;
+    }
+
+    public void setProperties(FeignClientsProperties properties) {
+        this.properties = properties;
     }
 
 }

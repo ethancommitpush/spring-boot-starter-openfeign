@@ -32,15 +32,12 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.util.ClassUtils;
 
-import lombok.Getter;
-
 import java.beans.Introspector;
 import java.util.*;
 
 /**
  * Registrar to register {@link com.github.ethancommitpush.feign.annotation.FeignClient}s.
  */
-@Getter
 public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware, EnvironmentAware {
 
     private static final String BASE_PACKAGES_KEY = "feign.base-packages";
@@ -64,11 +61,11 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
      */
     public void registerFeignClients(BeanDefinitionRegistry registry) {
         ClassPathScanningCandidateComponentProvider scanner = getScanner();
-        scanner.setResourceLoader(getResourceLoader());
+        scanner.setResourceLoader(resourceLoader);
 
         AnnotationTypeFilter annotationTypeFilter = new AnnotationTypeFilter(FeignClient.class);
         scanner.addIncludeFilter(annotationTypeFilter);
-        List<String> basePackages = Optional.ofNullable(getEnvironment().getProperty(BASE_PACKAGES_KEY))
+        List<String> basePackages = Optional.ofNullable(environment.getProperty(BASE_PACKAGES_KEY))
                 .map(s -> Arrays.asList(s.split("\\,"))).orElse(Collections.emptyList());
 
         basePackages.stream()
@@ -86,9 +83,9 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
 
     /**
      * Register generated feign clients as singletons.
+     * @param registry registry.
      * @param className class name of the interface which declared with &#64;FeignClient.
      * @param attributes attributes of the &#64;FeignClient annotation.
-     * @param logLevel log level configured at property file or as default value: BASIC.
      */
     private void registerFeignClient(BeanDefinitionRegistry registry, String className, Map<String, Object> attributes) {
         String shortClassName = ClassUtils.getShortName(className);
@@ -119,7 +116,7 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar, Res
      * @return scanner.
      */
     private ClassPathScanningCandidateComponentProvider getScanner() {
-        return new ClassPathScanningCandidateComponentProvider(false, getEnvironment()) {
+        return new ClassPathScanningCandidateComponentProvider(false, environment) {
             @Override
             protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
                 if (!beanDefinition.getMetadata().isIndependent()) {
