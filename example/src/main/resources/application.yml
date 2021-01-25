@@ -1,6 +1,9 @@
 feign:
   log-level: BASIC
+  logger-type: SLF4J
   base-packages: example.client
 
 postman-echo:
   domain: https://postman-echo.com
+
+logging.level.example: DEBUG

@@ -5,7 +5,7 @@ import example.dto.PostPostRespDTO;
 import feign.Param;
 import feign.RequestLine;
 
-@FeignClient(url = "${postman-echo.domain}")
+@FeignClient(url = "${postman-echo.domain}", decoder = "myDecoder")
 public interface PostmanEchoClient2 {
 
     @RequestLine("POST /post?foo1={foo1}&foo2={foo2}")
