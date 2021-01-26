@@ -10,21 +10,22 @@ There is no any configures about Ribbon or Eureka for this library, just simply 
 
 
 
-## What's new?
-### Update 01/09/2021: Version 1.1.3 Release Includes
+## What's New?
+### [1.2.0](https://mvnrepository.com/artifact/com.github.ethancommitpush/spring-boot-starter-openfeign/1.2.0) - 25th January 2021
+* Enhance the @FeignClient annotation customizations including fully configurable HTTP client, request encoder, response decoder, and error response decoder
+* Enhance the properties file customizations including configurable logLevel and loggerType
+### [1.1.3](https://mvnrepository.com/artifact/com.github.ethancommitpush/spring-boot-starter-openfeign/1.1.3) - 9th January 2021
 * Fix CustomErrorDecoder error and upgrade to compatible with feign ^10.7.3 ~10.12
-### Update 11/17/2020: Version 1.1.2 Release Includes
-* Replace default encoder with JacksonEncoder
 
 ## Requirements
 The following table shows the feign versions that are used by version of spring-boot-starter-openfeign:
 
 | spring-boot-starter-openfeign        | feign  |
-| ------------- |:-------------:|
-| 1.1.3      | ^10.7.3 |
+| :-------------: |:-------------:|
+| 1.2.0<br />1.1.3      | ^10.7.3 |
 | 1.1.2      | 10.7.2 |
 
-## Maven configuration
+## Maven Configuration
 
 Add the Maven dependency:
 
@@ -32,7 +33,7 @@ Add the Maven dependency:
 <dependency>
   <groupId>com.github.ethancommitpush</groupId>
   <artifactId>spring-boot-starter-openfeign</artifactId>
-  <version>1.1.3</version>
+  <version>1.2.0</version>
 </dependency>
 
 <dependency>
@@ -52,18 +53,25 @@ Add the Maven dependency:
   <artifactId>feign-httpclient</artifactId>
   <version>10.7.3</version>
 </dependency>
+
+<dependency>
+  <groupId>io.github.openfeign</groupId>
+  <artifactId>feign-slf4j</artifactId>
+  <version>10.7.3</version>
+</dependency>
 ```
 
 ## Gradle 
 
 ```groovy
-compile group: 'com.github.ethancommitpush', name: 'spring-boot-starter-openfeign', version: '1.1.3'
+compile group: 'com.github.ethancommitpush', name: 'spring-boot-starter-openfeign', version: '1.2.0'
 compile group: 'io.github.openfeign', name: 'feign-core', version: '10.7.3'
 compile group: 'io.github.openfeign', name: 'feign-jackson', version: '10.7.3'
 compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.7.3'
+compile group: 'io.github.openfeign', name: 'feign-slf4j', version: '10.7.3'
 ```
 
-# Usage
+# Basic Usage
 
 * Use `@FeignClient` to declare custom components to be generated as API interfaces:
 
@@ -86,6 +94,8 @@ public interface PostmanEchoClient {
 feign:
   # Set up log level for feign behaviors
   log-level: BASIC
+  # Set up logger type to append logs
+  logger-type: SLF4J
   # Packages to be scanned for interfaces declared with @FeignClient
   base-packages: example.client
 
@@ -108,5 +118,64 @@ postman-echo:
 
 ### Examples
 Look up the [example](https://github.com/ethancommitpush/spring-boot-starter-openfeign/tree/master/example).
+
+# Advanced Usage
+
+* The following table shows the components and iots default bean names which were used by spring-boot-starter-openfeign. If you want to customize some components of them, just implement the component interfaces and delare them as beans:
+
+| Component Type        | Default Bean Name      | Component Interface      |
+|:-------------:| :-------------: |:-------------:|
+| HTTP Client      | feignClient      | [feign.Client](https://github.com/OpenFeign/feign/blob/10.7.3/core/src/main/java/feign/Client.java)      |
+| Request Encoder      | feignEncoder      | [feign.codec.Encoder](https://github.com/OpenFeign/feign/blob/10.7.3/core/src/main/java/feign/codec/Encoder.java)      |
+| Response Decoder      | feignDecoder      | [feign.codec.Decoder](https://github.com/OpenFeign/feign/blob/10.7.3/core/src/main/java/feign/codec/Decoder.java)      |
+| Error Response Decoder      | feignErrorDecoder      | [feign.codec.ErrorDecoder](https://github.com/OpenFeign/feign/blob/10.7.3/core/src/main/java/feign/codec/ErrorDecoder.java)      |
+
+* Use `@Configuration` to declare a default decoder for all API interfaces with `@FeignClient` annotation:
+
+```java
+@Configuration
+@Slf4j
+public class FeignConfig {
+    @Bean
+    public Decoder feignDecoder() {
+        return new JacksonDecoder() {
+            @Override
+            public Object decode(Response response, Type type) throws IOException {
+                log.info("inside overridden feignDecoder.decoder()");
+                return super.decode(response, type);
+            }
+        };
+    }
+}
+```
+
+* Use `@Configuration` to declare a custom decoder, and assign to certain API interface with `@FeignClient` annotation:
+
+```java
+@Configuration
+@Slf4j
+public class FeignConfig {
+    @Bean
+    public Decoder myDecoder() {
+        return new JacksonDecoder() {
+            @Override
+            public Object decode(Response response, Type type) throws IOException {
+                log.info("inside myDecoder.decoder()");
+                return super.decode(response, type);
+            }
+        };
+    }
+}
+```
+
+```java
+@FeignClient(url = "${postman-echo.domain}", decoder = "myDecoder")
+public interface PostmanEchoClient2 {
+
+    @RequestLine("POST /post?foo1={foo1}&foo2={foo2}")
+    PostPostRespDTO postPost(@Param("foo1") String foo1, @Param("foo2") String foo2);
+
+}
+```
 
 ---
